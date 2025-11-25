@@ -1,52 +1,134 @@
 package com.example.ocx_1001_driverapp.Fragments
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import androidx.fragment.app.Fragment
 import com.example.ocx_1001_driverapp.R
+import com.example.ocx_1001_driverapp.uploadsscreen.CaptureRCActivity
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [Vehicle_formFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Vehicle_formFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var vehicleNumberEditText: EditText
+    private lateinit var citySpinner: Spinner
+
+    private lateinit var cardTruck: LinearLayout
+    private lateinit var card3W: LinearLayout
+    private lateinit var card2W: LinearLayout
+
+    private var rcUploaded = false
+    private var selectedCity: String? = null
+    private var selectedVehicleType: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_vehicle_form, container, false)
+
+        val view = inflater.inflate(R.layout.fragment_vehicle_form, container, false)
+
+        // Initialize Inputs
+        vehicleNumberEditText = view.findViewById(R.id.vehicleNumberEditText)
+        citySpinner = view.findViewById(R.id.citySpinner)
+
+        // Vehicle Cards
+        cardTruck = view.findViewById(R.id.cardTruck)
+        card3W = view.findViewById(R.id.card3W)
+        card2W = view.findViewById(R.id.card2W)
+
+        setupCitySpinner()
+        setupVehicleSelection()
+        setupRcUpload(view)
+
+        return view
     }
 
-    companion object {
+    // ===================== CITY DROPDOWN =====================
+    private fun setupCitySpinner() {
 
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Vehicle_formFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        val cities = listOf(
+            "Select City",
+            "Jhansi",
+            "Datia",
+            "Orai",
+            "Lalitpur",
+            "Mahoba",
+            "Gwalior",
+            "Hamirpur",
+            "Banda"
+        )
+
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            cities
+        )
+
+        citySpinner.adapter = adapter
+
+        citySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                selectedCity = if (position == 0) null else cities[position]
             }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+    // ===================== VEHICLE TYPE SELECT =====================
+    private fun setupVehicleSelection() {
+
+        val defaultBG = R.drawable.vehicle_card_bg
+        val selectedBG = R.drawable.vehicle_card_selected_blue  // <-- Use your BLUE BG
+
+        fun resetAll() {
+            cardTruck.setBackgroundResource(defaultBG)
+            card3W.setBackgroundResource(defaultBG)
+            card2W.setBackgroundResource(defaultBG)
+        }
+
+        cardTruck.setOnClickListener {
+            resetAll()
+            cardTruck.setBackgroundResource(selectedBG)
+            selectedVehicleType = "Truck"
+        }
+
+        card3W.setOnClickListener {
+            resetAll()
+            card3W.setBackgroundResource(selectedBG)
+            selectedVehicleType = "3W"
+        }
+
+        card2W.setOnClickListener {
+            resetAll()
+            card2W.setBackgroundResource(selectedBG)
+            selectedVehicleType = "2W"
+        }
+    }
+
+    // ===================== VEHICLE RC UPLOAD =====================
+    private fun setupRcUpload(view: View) {
+        val uploadRC = view.findViewById<TextView>(R.id.uploadRC)
+
+        uploadRC.setOnClickListener {
+            startActivity(Intent(requireContext(), CaptureRCActivity::class.java))
+            rcUploaded = true
+        }
+    }
+
+    // ===================== FORM VALIDATION =====================
+    fun isFormValid(): Boolean {
+
+        val vehicleNumber = vehicleNumberEditText.text.toString().trim()
+
+        return vehicleNumber.isNotEmpty() &&
+                rcUploaded &&
+                selectedCity != null &&
+                selectedVehicleType != null
     }
 }

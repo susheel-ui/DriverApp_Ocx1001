@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragments.Driver_FormFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#D1CECE"
@@ -138,20 +137,20 @@
                             android:layout_height="wrap_content"
                             android:text="Driving Licence"
                             android:textColor="@android:color/black" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/uploaded"
-                            android:textColor="#4CAF50"/>
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/camera_icon"
+                    <TextView
+                        android:id="@+id/uploadDL"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        app:tint="#2979FF" />
+                        android:drawableStart="@drawable/camera_icon"
+                        android:drawablePadding="8dp"
+                        android:gravity="center"
+                        android:text="@string/upload"
+                        android:textColor="#2979FF" />
+
+
                 </RelativeLayout>
 
 

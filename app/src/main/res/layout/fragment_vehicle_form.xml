@@ -5,84 +5,188 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.Vehicle_formFragment">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/white"
-        >
+        android:paddingBottom="80dp">
 
-        <!-- Vehicle Number -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Vehicle Number *"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp"/>
-        <EditText
-            android:id="@+id/vehicleNumberEditText"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Vehicle Number"
-            android:background="@drawable/edit_text_background"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp"/>
-        <!-- Note: @drawable/edit_text_background would be a shape drawable with a white background and rounded corners -->
-
-        <!-- Vehicle RC Upload -->
-        <RelativeLayout
-            android:id="@+id/vehicleRcUpload"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/upload_item_background"
+            android:orientation="vertical"
             android:padding="16dp"
-            android:layout_marginBottom="24dp">
-            <!-- Note: @drawable/upload_item_background would be a shape drawable similar to the EditText background -->
+            android:background="@color/white">
+
+            <!-- Vehicle Number -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Vehicle RC"
-                android:layout_centerVertical="true"
+                android:text="Vehicle Number *"
                 android:textColor="@android:color/black"
-                android:textSize="16sp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upload"
-                android:textColor="#2979FF"
-                android:drawableStart="@drawable/camera_icon"
-                android:drawablePadding="8dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                android:textStyle="bold"/>
-            <!-- Note: @drawable/ic_camera would be a vector asset for the camera icon -->
-        </RelativeLayout>
+                android:layout_marginBottom="8dp"/>
 
-        <!-- City of Operation -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select the city of operation"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp">
-            <Spinner
-                android:id="@+id/citySpinner"
+            <EditText
+                android:id="@+id/vehicleNumberEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:background="@android:color/transparent"/>
-        </RelativeLayout>
+                android:hint="Enter Vehicle Number"
+                android:background="@drawable/edit_text_background"
+                android:padding="12dp"
+                android:layout_marginBottom="24dp"/>
 
-    </LinearLayout>
+            <!-- Vehicle RC Upload -->
+            <RelativeLayout
+                android:id="@+id/vehicleRcLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/upload_item_background"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vehicle RC"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:id="@+id/uploadRC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload"
+                    android:textColor="#2979FF"
+                    android:drawableStart="@drawable/camera_icon"
+                    android:drawablePadding="8dp"
+                    android:textStyle="bold"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
+            <!-- ========================= -->
+            <!--  SELECT VEHICLE TYPE      -->
+            <!-- ========================= -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Vehicle Type"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:weightSum="3"
+                android:layout_marginBottom="24dp">
+
+                <!-- Truck -->
+                <LinearLayout
+                    android:id="@+id/cardTruck"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/vehicle_card_bg"
+                    android:layout_marginRight="8dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_truck" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Truck"
+                        android:textColor="#000"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <!-- 3W -->
+                <LinearLayout
+                    android:id="@+id/card3W"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/vehicle_card_bg"
+                    android:layout_marginRight="8dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_3w" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3W"
+                        android:textColor="#000"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+                <!-- 2W -->
+                <LinearLayout
+                    android:id="@+id/card2W"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:background="@drawable/vehicle_card_bg">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_2w" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2W"
+                        android:textColor="#000"
+                        android:layout_marginTop="6dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ========================= -->
+            <!-- CITY DROPDOWN             -->
+            <!-- ========================= -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select the city of operation"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:padding="4dp">
+
+                <Spinner
+                    android:id="@+id/citySpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="12dp"
+                    android:background="@android:color/transparent"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

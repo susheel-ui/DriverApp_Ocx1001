@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- CAMERA PERMISSION -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,27 +19,66 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OCX_1001_DriverApp"
         tools:targetApi="31">
-        <activity
-            android:name=".HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Otp_VerificationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RegistrationActivity"
-            android:exported="true"></activity>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true"></activity>
+
+        <!-- Splash Screen (Logo) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Other Screens -->
+        <activity
+            android:name=".Otp_VerificationActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RegistrationActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
+
+        <!-- Aadhaar Capture Screen -->
+        <activity
+            android:name=".uploadsscreen.CaptureAadhaarActivity"
+            android:exported="true" />
+
+        <!-- Selfie Capture Screen -->
+        <activity android:name=".CaptureSelfieActivity"
+            android:exported="true" />
+
+        <!-- PAN Capture Screen -->
+        <activity android:name=".CapturePANActivity"
+            android:exported="true" />
+
+        <!--RC Capture Screen -->
+        <activity android:name=".uploadsscreen.CaptureRCActivity"
+            android:exported="true" />
+
+        <!-- DL Capture Screen -->
+        <activity android:name=".uploadsscreen.CaptureDLActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="true" />
+
+        <!-- FILE PROVIDER (Required for Camera Upload) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
     </application>
 
 </manifest>

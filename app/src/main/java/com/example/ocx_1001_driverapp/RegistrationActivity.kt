@@ -5,6 +5,7 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.ocx_1001_driverapp.Fragments.Driver_FormFragment
@@ -36,40 +37,58 @@ class RegistrationActivity : AppCompatActivity() {
 //            insets
 //        }
         binding.buttonSubmit.setOnClickListener {
-            when(currentFragment){
+            when (currentFragment) {
+
                 is Owner_formFragement -> {
-                    // selector state change
+                    val form = currentFragment as Owner_formFragement
+
+//                    if (!form.isFormValid()) {
+//                        Toast.makeText(this, "Please complete all Owner details", Toast.LENGTH_SHORT).show()
+//                        return@setOnClickListener
+//                    }
+
+                    // ✔ Move to Vehicle Form
                     binding.vehicleSelectorTV.setBackgroundResource(R.drawable.stepper_circle_active)
                     binding.ownerSelectorTV.setBackgroundResource(R.drawable.stepper_circle_complete)
                     binding.ownerTV.setTextColor(resources.getColor(R.color.gray))
                     binding.vehicleTV.setTextColor(resources.getColor(R.color.color_primary))
-                    //change Fragment
-                    Utility.changeFragment(this,binding.fragmentContainerView,vehicleFormfragement)
+
+                    Utility.changeFragment(this, binding.fragmentContainerView, vehicleFormfragement)
                     currentFragment = vehicleFormfragement
                 }
 
                 is Vehicle_formFragment -> {
-                    //selector stage change
+                    val form = currentFragment as Vehicle_formFragment
+
+//                    if (!form.isFormValid()) {
+//                        Toast.makeText(this, "Please complete all Vehicle details", Toast.LENGTH_SHORT).show()
+//                        return@setOnClickListener
+//                    }
+
+                    // ✔ Move to Driver Form
                     binding.driverSelectorTV.setBackgroundResource(R.drawable.stepper_circle_active)
                     binding.vehicleSelectorTV.setBackgroundResource(R.drawable.stepper_circle_complete)
                     binding.vehicleTV.setTextColor(resources.getColor(R.color.gray))
                     binding.driverTV.setTextColor(resources.getColor(R.color.color_primary))
-                    //change fragment
-                    Utility.changeFragment(this,binding.fragmentContainerView, driverFormfragement)
+
+                    Utility.changeFragment(this, binding.fragmentContainerView, driverFormfragement)
                     currentFragment = driverFormfragement
                     binding.buttonSubmit.text = resources.getString(R.string.submit)
                 }
-                is Driver_FormFragment -> {
-                    /* TODO:: here we have to submit all fragment
-                    * Now this is going to home Activity but it will required to go for My Vehicle Page and then Payment Page
-                    *  */
-                    startActivity(Intent(this,HomeActivity::class.java))
-                }
-                else->{
 
+                is Driver_FormFragment -> {
+                    val form = currentFragment as Driver_FormFragment
+
+//                    if (!form.isFormValid()) {
+//                        Toast.makeText(this, "Please complete all Driver details", Toast.LENGTH_SHORT).show()
+//                        return@setOnClickListener
+//                    }
+
+                    startActivity(Intent(this, DashboardActivity::class.java))
                 }
             }
         }
+
         try {
             Utility.changeFragment(this,binding.fragmentContainerView, currentFragment)
         }catch (e:Exception){

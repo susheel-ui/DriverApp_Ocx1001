@@ -22,6 +22,7 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="8dp"/>
         <EditText
+            android:id="@+id/editTextName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/name"
@@ -51,6 +52,7 @@
                 android:layout_centerVertical="true"
                 android:textColor="@android:color/black"/>
             <TextView
+                android:id="@+id/uploadAadhaar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/upload"
@@ -58,8 +60,18 @@
                 android:drawableStart="@drawable/camera_icon"
                 android:drawablePadding="8dp"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"/>
+                android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/tickAadhaar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tick_green"
+                android:layout_marginEnd="12dp"
+                android:layout_alignParentEnd="true"
+                android:visibility="gone"/>
+
+
         </RelativeLayout>
 
         <!-- PAN Card Upload -->
@@ -76,6 +88,7 @@
                 android:layout_centerVertical="true"
                 android:textColor="@android:color/black"/>
             <TextView
+                android:id="@+id/uploadPan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/upload"
@@ -85,6 +98,16 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"/>
+
+            <ImageView
+                android:id="@+id/tickPan"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tick_green"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone"/>
+
         </RelativeLayout>
 
         <!-- Selfie Upload -->
@@ -100,6 +123,7 @@
                 android:layout_centerVertical="true"
                 android:textColor="@android:color/black"/>
             <TextView
+                android:id="@+id/uploadSelfie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/upload"
@@ -109,6 +133,16 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"/>
+
+            <ImageView
+                android:id="@+id/tickSelfie"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tick_green"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone"/>
+
         </RelativeLayout>
     </LinearLayout>
     </ScrollView>
