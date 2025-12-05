@@ -21,7 +21,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
 //            insets
 //        }
         binding.verifyButton.setOnClickListener {
-            startActivity(Intent(this,RegistrationActivity::class.java))
+            startActivity(Intent(this, DashboardActivity::class.java))
         }
 
     }

@@ -58,4 +58,7 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.0")
 // Optional (Night mode, LR enhancements)
     implementation("androidx.camera:camera-extensions:1.3.0")
+
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 }

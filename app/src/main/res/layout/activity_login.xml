@@ -122,7 +122,7 @@
                 android:background="#BDBDBD"/>
 
             <EditText
-                android:id="@+id/editTextPhone"
+                android:id="@+id/phoneEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
