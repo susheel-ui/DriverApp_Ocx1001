@@ -29,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            LocalStorage.savePhone(this, phone)
             callLoginApi(phone)
         }
     }
@@ -53,48 +54,27 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
 
-                val raw = response.body?.string()
-                println("🚀 RAW RESPONSE = $raw")
-
-                var jsonObj = JSONObject()
-                if (!raw.isNullOrEmpty()) jsonObj = JSONObject(raw)
-
-                val codeValue = jsonObj.optString("code", "").uppercase()
+                val raw = response.body?.string() ?: "{}"
+                val json = JSONObject(raw)
+                val code = json.optString("code")
 
                 runOnUiThread {
 
-                    when {
-                        // ---------------------------------
-                        // OTP Flow → Go to OTP screen
-                        // ---------------------------------
-                        response.code == 200 && codeValue.contains("OTP") -> {
+                    when (code) {
 
-                            LocalStorage.savePhone(this@LoginActivity, phone)
-
-                            startActivity(
-                                Intent(this@LoginActivity, Otp_VerificationActivity::class.java)
-                            )
+                        "OTP_SENT" -> {
+                            startActivity(Intent(this@LoginActivity, Otp_VerificationActivity::class.java))
                         }
 
-                        // ---------------------------------
-                        // Registration Flow → Go to Register
-                        // ---------------------------------
-                        response.code == 404 && codeValue.contains("REGISTER") -> {
-
-                            LocalStorage.savePhone(this@LoginActivity, phone)
-
-                            startActivity(
-                                Intent(this@LoginActivity, RegistrationActivity::class.java)
-                            )
+                        "NEED_REGISTER" -> {
+                            startActivity(Intent(this@LoginActivity, RegistrationActivity::class.java))
                         }
 
-                        else -> {
-                            Toast.makeText(
-                                this@LoginActivity,
-                                "Unexpected Server Response",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        else -> Toast.makeText(
+                            this@LoginActivity,
+                            "Unexpected: $code",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
