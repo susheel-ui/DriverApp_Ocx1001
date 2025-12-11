@@ -15,12 +15,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right,systemBars.bottom)
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
         Handler().postDelayed({
-            startActivity(Intent(this, LoginActivity::class.java))
-        },0)
+
+            val token = LocalStorage.getToken(this)
+
+            if (token.isNullOrEmpty()) {
+                // No login → go to Login
+                startActivity(Intent(this, LoginActivity::class.java))
+            } else {
+                // Logged in → go to Dashboard
+                startActivity(Intent(this, DashboardActivity::class.java))
+            }
+
+            finish()
+
+        }, 0)
     }
 }

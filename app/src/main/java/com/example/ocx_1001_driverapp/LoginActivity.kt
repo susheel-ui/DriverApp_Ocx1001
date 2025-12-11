@@ -29,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Save phone
             LocalStorage.savePhone(this, phone)
             callLoginApi(phone)
         }
@@ -40,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://10.0.2.2:8080/auth/login")
+            .url("http://192.168.1.7:8080/auth/login")
             .post(body)
             .build()
 
@@ -63,6 +64,16 @@ class LoginActivity : AppCompatActivity() {
                     when (code) {
 
                         "OTP_SENT" -> {
+                            // Save userId (important)
+                            val userId = json.optLong("userId", 0)
+                            if (userId != 0L) {
+                                LocalStorage.saveUserId(this@LoginActivity, userId)
+                                println("Saved userId = $userId")
+                            }
+
+                            // Upload token immediately if available
+                            uploadExistingToken()
+
                             startActivity(Intent(this@LoginActivity, Otp_VerificationActivity::class.java))
                         }
 
@@ -77,6 +88,34 @@ class LoginActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
+            }
+        })
+    }
+
+    private fun uploadExistingToken() {
+        val token = LocalStorage.getFcmToken(this)
+        val userId = LocalStorage.getUserId(this)
+
+        if (token == null || userId == 0L) {
+            println("⚠ Cannot upload token — token or userId missing!")
+            return
+        }
+
+        val json = """{"driverId":$userId,"token":"$token"}"""
+        val body = json.toRequestBody("application/json".toMediaType())
+
+        val request = Request.Builder()
+            .url("http://192.168.1.7:8080/api/driver/save-token")
+            .post(body)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                println("❌ Token upload failed in LoginActivity: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                println("✅ Token uploaded after login: ${response.code}")
             }
         })
     }

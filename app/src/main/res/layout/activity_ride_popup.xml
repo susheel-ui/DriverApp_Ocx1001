@@ -1,34 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="20dp"
-    android:background="@color/white"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootLayout"
+    android:background="#CC000000"
+    android:padding="24dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/txtMessage"
-        android:text="Loading..."
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/btnAccept"
-        android:text="Accept"
-        android:layout_below="@id/txtMessage"
-        android:layout_marginTop="20dp"
+    <!-- CARD -->
+    <LinearLayout
+        android:id="@+id/card"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="@drawable/popup_rounded_bg"
+        android:layout_centerInParent="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btnReject"
-        android:text="Reject"
-        android:layout_below="@id/btnAccept"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <!-- TITLE -->
+        <TextView
+            android:id="@+id/txtMessage"
+            android:text="New Ride Request"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Timer -->
+        <TextView
+            android:id="@+id/txtTimer"
+            android:text="15"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_red_dark"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Accept -->
+        <Button
+            android:id="@+id/btnAccept"
+            android:text="ACCEPT"
+            android:layout_marginTop="20dp"
+            android:background="@android:color/holo_green_dark"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Reject -->
+        <Button
+            android:id="@+id/btnReject"
+            android:text="REJECT"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_red_dark"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
