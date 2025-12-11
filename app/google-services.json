@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "229285565746",
+    "project_id": "zarkit-fcm",
+    "storage_bucket": "zarkit-fcm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229285565746:android:323ddaf32827c4e385332b",
+        "android_client_info": {
+          "package_name": "com.example.ocx_1001_driverapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY5E0BxA5QPxf7bLLJClyhZ6fDWH8g5II"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
