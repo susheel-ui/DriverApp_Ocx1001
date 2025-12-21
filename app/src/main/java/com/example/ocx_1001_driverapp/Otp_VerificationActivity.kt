@@ -53,8 +53,11 @@ class Otp_VerificationActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
                 if (!response.isSuccessful) {
-                    Toast.makeText(this@Otp_VerificationActivity, "Invalid OTP", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(
+                        this@Otp_VerificationActivity,
+                        "Invalid OTP",
+                        Toast.LENGTH_LONG
+                    ).show()
                     return
                 }
 
@@ -65,8 +68,19 @@ class Otp_VerificationActivity : AppCompatActivity() {
                 val token = json.optString("token")
                 val role = json.optString("role")
                 val userId = json.optLong("userId")
+                val isRegistered = json.optBoolean("isRegistered", true) // ✅ ADDED
 
                 if (code == "LOGIN_SUCCESS") {
+
+                    // ❌ BLOCK NON-DRIVER LOGIN
+                    if (role != "DRIVER") {
+                        Toast.makeText(
+                            this@Otp_VerificationActivity,
+                            "Only drivers are allowed to login",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return
+                    }
 
                     // Save login details
                     LocalStorage.saveToken(this@Otp_VerificationActivity, token)
@@ -79,80 +93,46 @@ class Otp_VerificationActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    // Redirect
-                    startActivity(
-                        Intent(
-                            this@Otp_VerificationActivity,
-                            DashboardActivity::class.java
+                    // ✅ CONDITIONAL REDIRECT
+                    if (!isRegistered) {
+                        startActivity(
+                            Intent(
+                                this@Otp_VerificationActivity,
+                                RegistrationActivity::class.java
+                            )
                         )
-                    )
+                    } else {
+                        startActivity(
+                            Intent(
+                                this@Otp_VerificationActivity,
+                                DashboardActivity::class.java
+                            )
+                        )
+                    }
+
                     finish()
 
                     // Save FCM Token
                     saveFcmTokenToServer(userId)
 
                 } else {
-                    Toast.makeText(this@Otp_VerificationActivity, "OTP Invalid", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(
+                        this@Otp_VerificationActivity,
+                        "OTP Invalid",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(
                     this@Otp_VerificationActivity,
-                    "Network Error: ${t.message}",
+                     "Network Error: ${t.message}",
                     Toast.LENGTH_LONG
                 ).show()
             }
         })
     }
-
-    //code for production beacuse if fcm token present it will skip api call and if not it will call
-//    private fun saveFcmTokenToServer(userId: Long) {
-//
-//        FirebaseMessaging.getInstance().token
-//            .addOnSuccessListener { fcm ->
-//
-//                val oldToken = LocalStorage.getFcmToken(this)
-//
-//                if (oldToken == fcm) {
-//                    println("⚠️ FCM unchanged — skipping API call")
-//                    return@addOnSuccessListener
-//                }
-//
-//                LocalStorage.saveFcmToken(this, fcm)
-//
-//                val jwt = LocalStorage.getToken(this)
-//
-//                val tokenBody = SaveTokenBody(
-//                    driverId = userId,
-//                    token = fcm
-//                )
-//
-//                ApiClient.api.saveDriverToken(
-//                    authHeader = "Bearer $jwt",
-//                    body = tokenBody
-//                ).enqueue(object : Callback<ResponseBody> {
-//
-//                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-//                        if (response.isSuccessful) {
-//                            println("🔥 FCM Token saved on server successfully")
-//                        } else {
-//                            println("❌ Server rejected FCM Token: ${response.code()}")
-//                        }
-//                    }
-//
-//                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-//                        println("❌ Network error saving FCM token: ${t.message}")
-//                    }
-//                })
-//            }
-//            .addOnFailureListener {
-//                println("❌ Failed to fetch FCM token: $it")
-//            }
-//    }
-//}
-
 
     private fun saveFcmTokenToServer(userId: Long) {
 
@@ -167,7 +147,6 @@ class Otp_VerificationActivity : AppCompatActivity() {
                     return@addOnSuccessListener
                 }
 
-                // If same token, still send (backend may want update)
                 if (oldToken == fcm) {
                     println("⚠️ FCM same but sending again to backend")
                 }
@@ -188,24 +167,30 @@ class Otp_VerificationActivity : AppCompatActivity() {
                     ) {
                         if (response.isSuccessful) {
                             println("🔥 FCM updated on server successfully")
-                            LocalStorage.saveFcmToken(this@Otp_VerificationActivity, fcm)
+                            LocalStorage.saveFcmToken(
+                                this@Otp_VerificationActivity,
+                                fcm
+                            )
                         } else {
-                            println("❌ Server rejected FCM Token: ${response.code()} — deleting local token")
+                            println("❌ Server rejected FCM Token")
                             LocalStorage.saveFcmToken(
                                 this@Otp_VerificationActivity,
                                 ""
-                            ) // delete local
+                            )
                         }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        println("❌ Failed to send token: ${t.message} → deleting local token")
-                        LocalStorage.saveFcmToken(this@Otp_VerificationActivity, "")
+                        println("❌ Failed to send token")
+                        LocalStorage.saveFcmToken(
+                            this@Otp_VerificationActivity,
+                            ""
+                        )
                     }
                 })
             }
             .addOnFailureListener {
-                println("❌ Could not fetch FCM token: $it")
+                println("❌ Could not fetch FCM token")
             }
     }
 }

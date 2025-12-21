@@ -1,123 +1,188 @@
 package com.example.ocx_1001_driverapp.Fragments
 
 import android.Manifest
-import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import com.example.ocx_1001_driverapp.CapturePANActivity
-import com.example.ocx_1001_driverapp.CaptureSelfieActivity
+import androidx.fragment.app.Fragment
+import com.example.ocx_1001_driverapp.LocalStorage
 import com.example.ocx_1001_driverapp.R
-import com.example.ocx_1001_driverapp.uploadsscreen.CaptureAadhaarActivity
-import org.w3c.dom.Text
+import com.example.ocx_1001_driverapp.api.ApiClient
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 class Owner_formFragement : Fragment() {
 
-    private var imageUri: Uri? = null
-    private var currentUploadType: String = ""
-
-    private var uploadAadhaar = false
-    private var uploadPan = false
-    private var uploadSelfie = false
     private lateinit var nameInput: EditText
 
+    private var aadhaarUri: Uri? = null
+    private var panUri: Uri? = null
+    private var selfieUri: Uri? = null
 
-    // CAMERA RESULT
+    private var currentType = ""
+    private var isSubmitting = false   // ✅ FIX: prevent multiple clicks
+
+    // ================= CAMERA =================
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            if (success) {
-                Toast.makeText(
-                    requireContext(),
-                    "$currentUploadType photo captured",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(requireContext(), "Camera cancelled", Toast.LENGTH_SHORT).show()
+            if (success && isAdded) {
+                toast("${currentType.capitalize()} captured")
             }
         }
 
-    // PERMISSION REQUEST
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                openCamera(currentUploadType)
-            } else {
-                Toast.makeText(requireContext(), "Camera permission required", Toast.LENGTH_SHORT).show()
-            }
+            if (granted) openCamera(currentType)
+            else toast("Camera permission required")
         }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         val view = inflater.inflate(R.layout.fragment_owner_form_fragement, container, false)
 
-        // INITIALIZE NAME INPUT ❗❗❗ THIS WAS MISSING
         nameInput = view.findViewById(R.id.editTextName)
 
-        // CLICK LISTENERS
         view.findViewById<TextView>(R.id.uploadAadhaar).setOnClickListener {
-            startActivity(Intent(requireContext(), CaptureAadhaarActivity::class.java))
-            uploadAadhaar = true
+            requestCamera("aadhaar")
         }
 
         view.findViewById<TextView>(R.id.uploadPan).setOnClickListener {
-            startActivity(Intent(requireContext(), CapturePANActivity::class.java))
-            uploadPan = true
+            requestCamera("pan")
         }
 
         view.findViewById<TextView>(R.id.uploadSelfie).setOnClickListener {
-            startActivity(Intent(requireContext(), CaptureSelfieActivity::class.java))
-            uploadSelfie = true
+            requestCamera("selfie")
         }
 
         return view
     }
 
-    // ⭐ THIS FUNCTION RETURNS TRUE ONLY IF ALL REQUIRED FIELDS ARE COMPLETED
-    fun isFormValid(): Boolean {
-
-        val name = nameInput.text.toString().trim()
-
-        return name.isNotEmpty() &&
-                uploadAadhaar &&
-                uploadPan &&
-                uploadSelfie
-    }
-
-    private fun requestCameraPermission(type: String) {
-        currentUploadType = type
-
-        // Android 13+ needs READ_MEDIA_IMAGES permission
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.CAMERA
-        } else {
-            Manifest.permission.CAMERA
-        }
-
-        permissionLauncher.launch(permission)
+    private fun requestCamera(type: String) {
+        currentType = type
+        permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
     private fun openCamera(type: String) {
-        val file = File(requireContext().cacheDir, "${type}.jpg")
-
-        imageUri = FileProvider.getUriForFile(
+        val file = File(requireContext().cacheDir, "$type.jpg")
+        val uri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
             file
         )
 
-        cameraLauncher.launch(imageUri)
+        when (type) {
+            "aadhaar" -> aadhaarUri = uri
+            "pan" -> panUri = uri
+            "selfie" -> selfieUri = uri
+        }
+
+        cameraLauncher.launch(uri)
+    }
+
+    // ================= API =================
+    fun submitOwnerDetails(onSuccess: () -> Unit) {
+
+        if (isSubmitting) return   // ✅ FIX
+
+        val name = nameInput.text.toString().trim()
+
+        // ✅ STRONG VALIDATION
+        when {
+            name.isEmpty() -> {
+                nameInput.error = "Name is required"
+                nameInput.requestFocus()
+                return
+            }
+            aadhaarUri == null -> {
+                toast("Upload Aadhaar card")
+                return
+            }
+            panUri == null -> {
+                toast("Upload PAN card")
+                return
+            }
+            selfieUri == null -> {
+                toast("Upload Selfie")
+                return
+            }
+        }
+
+        val jwt = LocalStorage.getToken(requireContext())
+        if (jwt.isNullOrEmpty()) {
+            toast("Session expired. Login again.")
+            return
+        }
+
+        isSubmitting = true   // ✅ START SUBMIT
+
+        val photo1 = createPart("photo1", aadhaarUri!!)
+        val photo2 = createPart("photo2", panUri!!)
+        val photo3 = createPart("photo3", selfieUri!!)
+
+        ApiClient.api.registerDriver(
+            authHeader = "Bearer $jwt",
+            name = name,
+            photo1 = photo1,
+            photo2 = photo2,
+            photo3 = photo3
+        ).enqueue(object : Callback<ResponseBody> {
+
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                isSubmitting = false
+
+                if (!isAdded) return
+
+                if (response.isSuccessful) {
+                    toast("Owner details saved")
+                    onSuccess()
+                } else {
+                    toast("Server error: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                isSubmitting = false
+                if (!isAdded) return
+                toast("Network error. Try again")
+            }
+        })
+    }
+
+    // ================= FILE PART =================
+    private fun createPart(key: String, uri: Uri): MultipartBody.Part {
+
+        val inputStream = requireContext()
+            .contentResolver
+            .openInputStream(uri)
+            ?: throw IllegalStateException("Cannot open file")
+
+        val bytes = inputStream.readBytes()
+        inputStream.close()
+
+        val body = bytes.toRequestBody("image/*".toMediaType())
+
+        return MultipartBody.Part.createFormData(key, "$key.jpg", body)
+    }
+
+    private fun toast(msg: String) {
+        if (isAdded)
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }

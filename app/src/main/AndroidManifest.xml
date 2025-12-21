@@ -2,32 +2,48 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+    <!-- Core permissions (REQUIRED) -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
-
+    <!-- Camera / uploads (KEEP because you use Aadhaar / PAN capture) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true"
         android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OCX_1001_DriverApp"
         tools:targetApi="31">
 
-        <!-- Splash Screen (Logo) -->
+        <!-- 🔥 FOREGROUND SERVICE (MATCHES YOUR CODE) -->
+        <service
+            android:name=".RideForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <!-- 🔥 Firebase Messaging Service -->
+        <service
+            android:name=".DriverFirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Launcher -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -37,66 +53,31 @@
             </intent-filter>
         </activity>
 
-        <!-- FULL SCREEN RIDE REQUEST POPUP -->
+        <!-- 🔥 Full-screen Ride Request Popup -->
         <activity
             android:name=".RideRequestPopupActivity"
-            android:exported="true"
+            android:exported="false"
+            android:launchMode="singleTask"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:theme="@style/Theme.DriverApp.FullScreenPopup"/>
+            android:theme="@style/Theme.DriverApp.FullScreenPopup" />
 
+        <!-- Other screens -->
+        <activity android:name=".LoginActivity" android:exported="true" />
+        <activity android:name=".RegistrationActivity" android:exported="true" />
+        <activity android:name=".ResistrationDriver" android:exported="true" />
+        <activity android:name=".Otp_VerificationActivity" android:exported="false" />
+        <activity android:name=".DashboardActivity" android:exported="true" />
 
+        <!-- Document capture screens -->
+        <activity android:name=".uploadsscreen.CaptureAadhaarActivity" android:exported="true" />
+        <activity android:name=".CaptureSelfieActivity" android:exported="true" />
+        <activity android:name=".CapturePANActivity" android:exported="true" />
+        <activity android:name=".uploadsscreen.CaptureRCActivity" android:exported="true" />
+        <activity android:name=".uploadsscreen.CaptureDLActivity" android:exported="true" />
 
-
-        <service
-            android:name=".DriverFirebaseService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <!-- Other Screens -->
-        <activity
-            android:name=".Otp_VerificationActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".RegistrationActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true" />
-
-        <!-- Aadhaar Capture Screen -->
-        <activity
-            android:name=".uploadsscreen.CaptureAadhaarActivity"
-            android:exported="true" />
-
-        <!-- Selfie Capture Screen -->
-        <activity android:name=".CaptureSelfieActivity"
-            android:exported="true" />
-
-        <!-- PAN Capture Screen -->
-        <activity android:name=".CapturePANActivity"
-            android:exported="true" />
-
-        <!--RC Capture Screen -->
-        <activity android:name=".uploadsscreen.CaptureRCActivity"
-            android:exported="true" />
-
-        <!-- DL Capture Screen -->
-        <activity android:name=".uploadsscreen.CaptureDLActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".DashboardActivity"
-            android:exported="true" />
-
-        <!-- FILE PROVIDER (Required for Camera Upload) -->
+        <!-- File provider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -108,5 +89,4 @@
         </provider>
 
     </application>
-
 </manifest>

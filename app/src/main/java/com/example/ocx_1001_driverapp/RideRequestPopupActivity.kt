@@ -1,10 +1,8 @@
 package com.example.ocx_1001_driverapp
 
+import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.*
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
@@ -19,12 +17,16 @@ class RideRequestPopupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Show on lock screen + wake display
+        // ✅ REQUIRED FOR ANDROID 8+ (Ola/Uber style)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+        }
+
+        // ✅ REQUIRED FOR OLD ANDROID
         window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD or
-                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
         )
 
         setContentView(R.layout.activity_ride_popup)
@@ -36,59 +38,90 @@ class RideRequestPopupActivity : AppCompatActivity() {
         val pickup = intent.getStringExtra("pickup") ?: "Pickup"
         val drop = intent.getStringExtra("drop") ?: "Drop"
 
-        txtMessage.text = "New Ride Request:\n$pickup → $drop"
+        txtMessage.text = "New Ride Request\n$pickup → $drop"
 
-        // 🔊 RINGTONE
-        mediaPlayer = MediaPlayer.create(this, R.raw.ride_request_tone)
-        mediaPlayer?.isLooping = true
-        mediaPlayer?.start()
-
-        // 📳 SAFE MAX VIBRATION (no crash on Vivo)
-        vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
-
-        try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                val effect = VibrationEffect.createOneShot(800, VibrationEffect.DEFAULT_AMPLITUDE)
-                vibrator?.vibrate(effect)
-            } else {
-                vibrator?.vibrate(800)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        // TIMER
-        timer = object : CountDownTimer(15000, 1000) {
-            override fun onTick(millis: Long) {
-                btnReject.text = "REJECT (${millis / 1000}s)"
-            }
-
-            override fun onFinish() {
-                stopAlert()
-                finish()
-            }
-        }.start()
+        startSound()
+        startVibration()
+        startTimer(btnReject)
 
         btnAccept.setOnClickListener {
-            stopAlert()
+            stopAll()
             finish()
         }
 
         btnReject.setOnClickListener {
-            stopAlert()
+            stopAll()
             finish()
         }
     }
 
-    private fun stopAlert() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        vibrator?.cancel()
+    // 🔊 Proper call-style sound (Uber/Ola)
+    private fun startSound() {
+        mediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            )
+            setDataSource(
+                this@RideRequestPopupActivity,
+                android.net.Uri.parse("android.resource://${packageName}/${R.raw.ride_request_tone}")
+            )
+            isLooping = true
+            prepare()
+            start()
+        }
+    }
+
+    // 📳 Safe vibration (OEM friendly)
+    private fun startVibration() {
+        vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator?.vibrate(
+                VibrationEffect.createWaveform(
+                    longArrayOf(0, 1000, 1000),
+                    0
+                )
+            )
+        } else {
+            vibrator?.vibrate(longArrayOf(0, 1000, 1000), 0)
+        }
+    }
+
+    // ⏱ Auto timeout (15 sec like Ola)
+    private fun startTimer(btnReject: Button) {
+        timer = object : CountDownTimer(15_000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                btnReject.text = "REJECT (${millisUntilFinished / 1000}s)"
+            }
+
+            override fun onFinish() {
+                stopAll()
+                finish()
+            }
+        }.start()
+    }
+
+    private fun stopAll() {
         timer?.cancel()
+
+        mediaPlayer?.apply {
+            stop()
+            release()
+        }
+        mediaPlayer = null
+
+        vibrator?.cancel()
     }
 
     override fun onDestroy() {
-        stopAlert()
+        stopAll()
         super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        // ❌ Disable back (Uber/Ola behavior)
     }
 }

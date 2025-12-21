@@ -32,6 +32,12 @@ class LoginActivity : AppCompatActivity() {
             // Save phone
             LocalStorage.savePhone(this, phone)
             callLoginApi(phone)
+
+
+//            // DIRECTLY OPEN REGISTRATION (TESTING ONLY)
+//            startActivity(
+//                Intent(this, RegistrationActivity::class.java)
+//            )
         }
     }
 
@@ -41,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://192.168.1.7:8080/auth/login")
+            .url("http://192.168.29.149:8080/auth/login")
             .post(body)
             .build()
 
@@ -78,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
                         }
 
                         "NEED_REGISTER" -> {
-                            startActivity(Intent(this@LoginActivity, RegistrationActivity::class.java))
+                            startActivity(Intent(this@LoginActivity, ResistrationDriver::class.java))
                         }
 
                         else -> Toast.makeText(
@@ -105,7 +111,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://192.168.1.7:8080/api/driver/save-token")
+            .url("http://192.168.29.149:8080/api/driver/save-token")
             .post(body)
             .build()
 

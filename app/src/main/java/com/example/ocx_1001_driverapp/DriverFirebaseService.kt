@@ -43,7 +43,7 @@ class DriverFirebaseService : FirebaseMessagingService() {
 
         // OPEN POPUP DIRECTLY ON LOCKSCREEN
         val intent = Intent(this, RideRequestPopupActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("fare", fare)
             putExtra("pickup", pickup)
             putExtra("drop", drop)
@@ -54,8 +54,12 @@ class DriverFirebaseService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val channelId = "ride_channel"
-        val alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        // UPDATED CHANNEL ID
+        val channelId = "ride_channel_v5"
+
+        // UPDATED CUSTOM SOUND (NO DEFAULT ALARM)
+        val alarmSound: Uri =
+            Uri.parse("android.resource://${packageName}/raw/ride_request_tone")
 
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -82,12 +86,11 @@ class DriverFirebaseService : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_CALL)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
             .setFullScreenIntent(pendingIntent, true)   // IMPORTANT
             .setSound(alarmSound)
             .setVibrate(longArrayOf(0, 700, 500, 700))
             .setAutoCancel(true)
-            .setOngoing(true)   // Keeps notification alive
+            .setOngoing(true)
 
         nm.notify(1002, builder.build())
     }

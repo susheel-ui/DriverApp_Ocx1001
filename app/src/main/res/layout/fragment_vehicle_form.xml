@@ -65,6 +65,34 @@
 
             </RelativeLayout>
 
+
+
+            <!-- ========================= -->
+            <!-- CITY DROPDOWN             -->
+            <!-- ========================= -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select the city of operation"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:padding="4dp">
+
+                <Spinner
+                    android:id="@+id/citySpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:padding="12dp"
+                    android:background="@android:color/transparent"/>
+            </RelativeLayout>
+
+
             <!-- ========================= -->
             <!--  SELECT VEHICLE TYPE      -->
             <!-- ========================= -->
@@ -160,31 +188,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <!-- ========================= -->
-            <!-- CITY DROPDOWN             -->
-            <!-- ========================= -->
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select the city of operation"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
-                android:padding="4dp">
-
-                <Spinner
-                    android:id="@+id/citySpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:padding="12dp"
-                    android:background="@android:color/transparent"/>
-            </RelativeLayout>
 
         </LinearLayout>
     </ScrollView>
