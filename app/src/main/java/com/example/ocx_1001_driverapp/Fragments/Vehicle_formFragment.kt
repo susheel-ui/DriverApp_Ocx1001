@@ -1,28 +1,36 @@
 package com.example.ocx_1001_driverapp.Fragments
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.example.ocx_1001_driverapp.LocalStorage
 import com.example.ocx_1001_driverapp.R
+import com.example.ocx_1001_driverapp.api.ApiClient
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 
 class Vehicle_formFragment : Fragment() {
 
-    private lateinit var vehicleNumberEditText: EditText
+    private lateinit var vehicleNumberEt: EditText
     private lateinit var citySpinner: Spinner
 
-    private lateinit var cardTruck: LinearLayout
-    private lateinit var card3W: LinearLayout
+    // Vehicle type cards
     private lateinit var card2W: LinearLayout
+    private lateinit var card3W: LinearLayout
+    private lateinit var cardTruck: LinearLayout
 
-    // Sub vehicle views
+    // Fuel UI
     private lateinit var subTitle: TextView
     private lateinit var subContainer: LinearLayout
     private lateinit var subCard1: LinearLayout
@@ -32,44 +40,40 @@ class Vehicle_formFragment : Fragment() {
     private lateinit var subText2: TextView
     private lateinit var subText3: TextView
 
-    private var rcUploaded = false
     private var rcUri: Uri? = null
+    private var isSubmitting = false
 
     private var selectedCity: String? = null
     private var selectedVehicleType: String? = null
     private var selectedFuelType: String? = null
 
     // ================= CAMERA =================
-    private val rcCameraLauncher =
+
+    private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            if (success && isAdded) {
-                rcUploaded = true
-                Toast.makeText(requireContext(), "RC photo captured", Toast.LENGTH_SHORT).show()
-            }
+            if (success && isAdded) toast("RC captured")
         }
 
-    private val cameraPermissionLauncher =
+    private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                openCamera()
-            } else {
-                Toast.makeText(requireContext(), "Camera permission required", Toast.LENGTH_SHORT).show()
-            }
+            if (granted) openCamera()
+            else toast("Camera permission required")
         }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
         val view = inflater.inflate(R.layout.fragment_vehicle_form, container, false)
 
-        vehicleNumberEditText = view.findViewById(R.id.vehicleNumberEditText)
+        vehicleNumberEt = view.findViewById(R.id.vehicleNumberEditText)
         citySpinner = view.findViewById(R.id.citySpinner)
 
-        cardTruck = view.findViewById(R.id.cardTruck)
-        card3W = view.findViewById(R.id.card3W)
         card2W = view.findViewById(R.id.card2W)
+        card3W = view.findViewById(R.id.card3W)
+        cardTruck = view.findViewById(R.id.cardTruck)
 
         subTitle = view.findViewById(R.id.subVehicleTitle)
         subContainer = view.findViewById(R.id.subVehicleContainer)
@@ -82,147 +86,168 @@ class Vehicle_formFragment : Fragment() {
 
         setupCitySpinner()
         setupVehicleSelection()
-        setupFuelSelection()
-        setupRcUpload(view)
+
+        view.findViewById<TextView>(R.id.uploadRC).setOnClickListener {
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        }
 
         return view
     }
 
-    // ================= CITY =================
-    private fun setupCitySpinner() {
-        val cities = listOf("Select City", "Jhansi", "Datia", "Orai", "Lalitpur", "Gwalior")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, cities)
-        citySpinner.adapter = adapter
+    // ================= VEHICLE + FUEL =================
 
-        citySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
-                selectedCity = if (pos == 0) null else cities[pos]
-            }
-            override fun onNothingSelected(p: AdapterView<*>?) {}
-        }
-    }
-
-    // ================= VEHICLE TYPE =================
     private fun setupVehicleSelection() {
 
-        val defaultBG = R.drawable.vehicle_card_bg
-        val selectedBG = R.drawable.vehicle_card_selected_blue
-
-        fun resetMain() {
-            cardTruck.setBackgroundResource(defaultBG)
-            card3W.setBackgroundResource(defaultBG)
-            card2W.setBackgroundResource(defaultBG)
-        }
-
         card2W.setOnClickListener {
-            resetMain()
-            card2W.setBackgroundResource(selectedBG)
-            selectedVehicleType = "2W"
-            showFuelOptions("2W")
+            selectVehicle("TWO_WHEELER", listOf("EV", "PETROL"))
+            highlightVehicle(card2W)
         }
 
         card3W.setOnClickListener {
-            resetMain()
-            card3W.setBackgroundResource(selectedBG)
-            selectedVehicleType = "3W"
-            showFuelOptions("3W")
+            selectVehicle("THREE_WHEELER", listOf("EV", "PETROL", "CNG"))
+            highlightVehicle(card3W)
         }
 
         cardTruck.setOnClickListener {
-            resetMain()
-            cardTruck.setBackgroundResource(selectedBG)
-            selectedVehicleType = "4W"
-            showFuelOptions("4W")
+            selectVehicle("FOUR_WHEELER", listOf("EV", "PETROL_DIESEL", "CNG"))
+            highlightVehicle(cardTruck)
         }
     }
 
-    // ================= FUEL OPTIONS =================
-    private fun showFuelOptions(type: String) {
+    private fun selectVehicle(type: String, fuels: List<String>) {
+        selectedVehicleType = type
+        selectedFuelType = null
 
         subTitle.visibility = View.VISIBLE
         subContainer.visibility = View.VISIBLE
-        selectedFuelType = null
-        resetFuelBG()
 
-        when (type) {
-            "2W" -> {
-                subText1.text = "EV"
-                subText2.text = "Petrol"
-                subCard3.visibility = View.GONE
-            }
-            "3W" -> {
-                subText1.text = "EV"
-                subText2.text = "Petrol/Diesel"
-                subText3.text = "CNG"
-                subCard3.visibility = View.VISIBLE
-            }
-            "4W" -> {
-                subText1.text = "EV"
-                subText2.text = "Diesel"
-                subText3.text = "CNG"
-                subCard3.visibility = View.VISIBLE
-            }
-        }
-    }
+        val cards = listOf(subCard1, subCard2, subCard3)
+        val texts = listOf(subText1, subText2, subText3)
 
-    private fun setupFuelSelection() {
+        for (i in cards.indices) {
+            if (i < fuels.size) {
+                cards[i].visibility = View.VISIBLE
+                texts[i].text = fuels[i]
 
-        val selectedBG = R.drawable.vehicle_card_selected_blue
-
-        fun select(card: LinearLayout, fuel: String) {
-            resetFuelBG()
-            card.setBackgroundResource(selectedBG)
-            selectedFuelType = fuel
-        }
-
-        subCard1.setOnClickListener { select(subCard1, subText1.text.toString()) }
-        subCard2.setOnClickListener { select(subCard2, subText2.text.toString()) }
-        subCard3.setOnClickListener { select(subCard3, subText3.text.toString()) }
-    }
-
-    private fun resetFuelBG() {
-        subCard1.setBackgroundResource(R.drawable.vehicle_card_bg)
-        subCard2.setBackgroundResource(R.drawable.vehicle_card_bg)
-        subCard3.setBackgroundResource(R.drawable.vehicle_card_bg)
-    }
-
-    // ================= RC UPLOAD =================
-    private fun setupRcUpload(view: View) {
-        view.findViewById<TextView>(R.id.uploadRC).setOnClickListener {
-
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.CAMERA
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                openCamera()
+                cards[i].setOnClickListener {
+                    selectedFuelType = fuels[i]
+                    cards.forEach { c -> c.setBackgroundResource(R.drawable.vehicle_card_bg) }
+                    cards[i].setBackgroundResource(R.drawable.vehicle_card_selected)
+                }
             } else {
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                cards[i].visibility = View.GONE
             }
+        }
+    }
+
+    private fun highlightVehicle(selected: LinearLayout) {
+        listOf(card2W, card3W, cardTruck).forEach {
+            it.setBackgroundResource(R.drawable.vehicle_card_bg)
+        }
+        selected.setBackgroundResource(R.drawable.vehicle_card_selected)
+    }
+
+    // ================= API =================
+
+    fun submitVehicle(onSuccess: () -> Unit) {
+
+        if (isSubmitting) return
+
+        val vehicleNumber = vehicleNumberEt.text.toString().trim()
+
+        when {
+            vehicleNumber.isEmpty() -> {
+                vehicleNumberEt.error = "Vehicle number required"
+                return
+            }
+            selectedCity == null -> toast("Select city")
+            selectedVehicleType == null -> toast("Select vehicle type")
+            selectedFuelType == null -> toast("Select fuel type")
+            rcUri == null -> toast("Upload RC image")
+            else -> {
+                val jwt = LocalStorage.getToken(requireContext())
+                if (jwt.isNullOrEmpty()) {
+                    toast("Session expired. Login again.")
+                    return
+                }
+
+                isSubmitting = true
+
+                val rcPart = createImagePart("vehicleImage", rcUri!!)
+
+                ApiClient.api.registerVehicle(
+                    authHeader = "Bearer $jwt",
+                    vehicleNumber = vehicleNumber,
+                    city = selectedCity!!,
+                    vehicleType = selectedVehicleType!!,
+                    vehicleSubType = selectedFuelType!!,
+                    vehicleImage = rcPart
+                ).enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        isSubmitting = false
+                        if (!isAdded) return
+
+                        if (response.isSuccessful) {
+                            toast("Vehicle Registered ✅")
+                            onSuccess()
+                        } else {
+                            toast("Server error: ${response.code()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        isSubmitting = false
+                        if (!isAdded) return
+                        toast("Network error")
+                    }
+                })
+            }
+        }
+    }
+
+    // ================= HELPERS =================
+
+    private fun setupCitySpinner() {
+        val cities = listOf("Select City", "Jhansi", "Datia", "Orai", "Lalitpur", "Gwalior")
+        citySpinner.adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, cities)
+
+        citySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                selectedCity = if (position == 0) null else cities[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
     private fun openCamera() {
-        val file = File(
-            requireContext().cacheDir,
-            "vehicle_rc_${System.currentTimeMillis()}.jpg"
-        )
-
+        val file = File(requireContext().cacheDir, "vehicle_rc.jpg")
         rcUri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
             file
         )
-
-        rcCameraLauncher.launch(rcUri)
+        cameraLauncher.launch(rcUri)
     }
 
-    // ================= VALIDATION =================
-    fun isFormValid(): Boolean {
-        return vehicleNumberEditText.text.toString().isNotEmpty()
-                && rcUploaded
-                && selectedCity != null
-                && selectedVehicleType != null
-                && selectedFuelType != null
+    private fun createImagePart(key: String, uri: Uri): MultipartBody.Part {
+        val body = requireContext().contentResolver.openInputStream(uri)!!.readBytes()
+            .toRequestBody("image/jpeg".toMediaType())
+        return MultipartBody.Part.createFormData(key, "$key.jpg", body)
+    }
+
+    private fun toast(msg: String) {
+        if (isAdded)
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }

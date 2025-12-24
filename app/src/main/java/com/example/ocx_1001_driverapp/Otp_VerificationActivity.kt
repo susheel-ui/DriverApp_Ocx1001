@@ -68,7 +68,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
                 val token = json.optString("token")
                 val role = json.optString("role")
                 val userId = json.optLong("userId")
-                val isRegistered = json.optBoolean("isRegistered", true) // ✅ ADDED
+                val isRegistered = json.optBoolean("is_registered", true) // ✅ ADDED
 
                 if (code == "LOGIN_SUCCESS") {
 

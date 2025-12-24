@@ -53,7 +53,8 @@ class ResistrationDriver : AppCompatActivity() {
             val body = json.toRequestBody("application/json".toMediaType())
 
             val request = Request.Builder()
-                .url("http://192.168.29.149:8080/auth/register")
+                .url("http://172.20.10.2:8080/auth/register")
+                .addHeader("Content-Type", "application/json")
                 .post(body)
                 .build()
 
@@ -76,7 +77,7 @@ class ResistrationDriver : AppCompatActivity() {
                     val code = jsonResp.optString("code")
 
                     runOnUiThread {
-                        if (code == "REGISTER_OTP_SENT") {
+                        if (response.isSuccessful && code == "REGISTER_OTP_SENT") {
 
                             val userId = jsonResp.optLong("userId", 0)
                             if (userId != 0L) {

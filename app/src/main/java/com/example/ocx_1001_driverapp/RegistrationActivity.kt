@@ -76,39 +76,50 @@ class RegistrationActivity : AppCompatActivity() {
                     }
                 }
 
-                // ================= VEHICLE =================
+// ================= VEHICLE =================
                 is Vehicle_formFragment -> {
 
-                    binding.driverSelectorTV.setBackgroundResource(
-                        R.drawable.stepper_circle_active
-                    )
-                    binding.vehicleSelectorTV.setBackgroundResource(
-                        R.drawable.stepper_circle_complete
-                    )
-                    binding.vehicleTV.setTextColor(
-                        resources.getColor(R.color.gray)
-                    )
-                    binding.driverTV.setTextColor(
-                        resources.getColor(R.color.color_primary)
-                    )
+                    val form = currentFragment as Vehicle_formFragment
 
-                    Utility.changeFragment(
-                        this,
-                        binding.fragmentContainerView,
-                        driverFormfragement
-                    )
-                    currentFragment = driverFormfragement
+                    form.submitVehicle {
 
-                    binding.buttonSubmit.text = getString(R.string.submit)
+                        binding.driverSelectorTV.setBackgroundResource(
+                            R.drawable.stepper_circle_active
+                        )
+                        binding.vehicleSelectorTV.setBackgroundResource(
+                            R.drawable.stepper_circle_complete
+                        )
+                        binding.vehicleTV.setTextColor(
+                            resources.getColor(R.color.gray)
+                        )
+                        binding.driverTV.setTextColor(
+                            resources.getColor(R.color.color_primary)
+                        )
+
+                        Utility.changeFragment(
+                            this,
+                            binding.fragmentContainerView,
+                            driverFormfragement
+                        )
+                        currentFragment = driverFormfragement
+
+                        binding.buttonSubmit.text = getString(R.string.submit)
+                    }
                 }
 
-                // ================= DRIVER =================
+// ================= DRIVER =================
                 is Driver_FormFragment -> {
-                    startActivity(
-                        Intent(this, DashboardActivity::class.java)
-                    )
-                    finish()
+
+                    val form = currentFragment as Driver_FormFragment
+
+                    form.submitDriver {
+                        startActivity(
+                            Intent(this, DashboardActivity::class.java)
+                        )
+                        finish()
+                    }
                 }
+
             }
         }
     }
