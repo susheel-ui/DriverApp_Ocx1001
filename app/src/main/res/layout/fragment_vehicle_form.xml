@@ -62,15 +62,9 @@
                     android:textStyle="bold"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"/>
-
             </RelativeLayout>
 
-
-
-            <!-- ========================= -->
-            <!-- CITY DROPDOWN             -->
-            <!-- ========================= -->
-
+            <!-- City -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,11 +86,7 @@
                     android:background="@android:color/transparent"/>
             </RelativeLayout>
 
-
-            <!-- ========================= -->
-            <!--  SELECT VEHICLE TYPE      -->
-            <!-- ========================= -->
-
+            <!-- Vehicle Type -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -106,12 +96,12 @@
                 android:layout_marginBottom="12dp"/>
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:gravity="center"
                 android:weightSum="3"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="16dp">
 
                 <!-- Truck -->
                 <LinearLayout
@@ -123,7 +113,7 @@
                     android:gravity="center"
                     android:padding="10dp"
                     android:background="@drawable/vehicle_card_bg"
-                    android:layout_marginRight="8dp">
+                    android:layout_marginEnd="8dp">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -148,7 +138,7 @@
                     android:gravity="center"
                     android:padding="10dp"
                     android:background="@drawable/vehicle_card_bg"
-                    android:layout_marginRight="8dp">
+                    android:layout_marginEnd="8dp">
 
                     <ImageView
                         android:layout_width="40dp"
@@ -186,10 +176,83 @@
                         android:textColor="#000"
                         android:layout_marginTop="6dp"/>
                 </LinearLayout>
+            </LinearLayout>
 
+            <!-- Sub Vehicle Type -->
+            <TextView
+                android:id="@+id/subVehicleTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Fuel Type"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:id="@+id/subVehicleContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="3"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/subCard1"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/vehicle_card_bg"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:id="@+id/subText1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EV"
+                        android:textColor="#000"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/subCard2"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/vehicle_card_bg"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:id="@+id/subText2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Petrol"
+                        android:textColor="#000"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/subCard3"
+                    android:layout_width="0dp"
+                    android:layout_height="90dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/vehicle_card_bg"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/subText3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CNG"
+                        android:textColor="#000"/>
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-
 </FrameLayout>

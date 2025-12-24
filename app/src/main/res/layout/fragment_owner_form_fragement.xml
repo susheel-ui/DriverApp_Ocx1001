@@ -29,7 +29,7 @@
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
             android:layout_marginBottom="24dp"
-            android:tag="required"/>
+            />
 
         <!-- Upload Section -->
         <TextView
@@ -62,7 +62,7 @@
                 android:drawablePadding="8dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:tag="required"/>
+               />
 
             <ImageView
                 android:id="@+id/tickAadhaar"
@@ -100,7 +100,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"
-                android:tag="required"/>
+                />
 
             <ImageView
                 android:id="@+id/tickPan"
@@ -136,7 +136,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"
-                android:tag="required"/>
+                />
 
             <ImageView
                 android:id="@+id/tickSelfie"
