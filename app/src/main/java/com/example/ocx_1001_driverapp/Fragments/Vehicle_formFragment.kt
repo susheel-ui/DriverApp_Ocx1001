@@ -104,12 +104,12 @@ class Vehicle_formFragment : Fragment() {
         }
 
         card3W.setOnClickListener {
-            selectVehicle("THREE_WHEELER", listOf("EV", "PETROL/DIESEL", "CNG"))
+            selectVehicle("THREE_WHEELER", listOf("EV", "PETROL", "CNG"))
             highlightVehicle(card3W)
         }
 
         cardTruck.setOnClickListener {
-            selectVehicle("FOUR_WHEELER", listOf("EV", "PETROL/DIESEL", "CNG"))
+            selectVehicle("FOUR_WHEELER", listOf("EV", "PETROL", "CNG"))
             highlightVehicle(cardTruck)
         }
     }
