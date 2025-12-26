@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Core permissions -->
+    <!-- 🌐 Core -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- 🔔 Notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- 🔊 Wake + vibration -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
-    <!-- 🔥 REQUIRED FOR FULL SCREEN POPUP -->
+    <!-- 🔥 Full screen / call style -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
 
-    <!-- Camera -->
+    <!-- 📷 Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
@@ -26,13 +32,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OCX_1001_DriverApp">
 
-        <!-- 🔥 Foreground Service (FIXED) -->
+        <!-- 🔥 Foreground Service -->
         <service
             android:name=".RideForegroundService"
             android:exported="false"
             android:foregroundServiceType="phoneCall" />
 
-        <!-- Firebase Messaging -->
+        <!-- 🔥 Firebase Messaging -->
         <service
             android:name=".DriverFirebaseService"
             android:exported="false">
@@ -41,7 +47,7 @@
             </intent-filter>
         </service>
 
-        <!-- Launcher -->
+        <!-- 🚀 Launcher -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -51,10 +57,10 @@
             </intent-filter>
         </activity>
 
-        <!-- 🔥 Full-screen Popup -->
+        <!-- 🔥 FULL SCREEN POPUP (IMPORTANT FIX HERE) -->
         <activity
             android:name=".RideRequestPopupActivity"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTask"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
@@ -68,7 +74,7 @@
         <activity android:name=".Otp_VerificationActivity" android:exported="false" />
         <activity android:name=".DashboardActivity" android:exported="true" />
 
-        <!-- File provider -->
+        <!-- 📁 File provider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

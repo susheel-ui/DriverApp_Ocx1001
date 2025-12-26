@@ -12,38 +12,38 @@ object LocalStorage {
     private const val KEY_FCM = "fcm_token"
     private const val KEY_USER_ID = "user_id"
 
+    // 🔥 NEW: ACTIVE RIDE ID
+    private const val KEY_ACTIVE_RIDE_ID = "active_ride_id"
+
     // -------------------------
     // USER ID
     // -------------------------
-
     fun saveUserId(context: Context, userId: Long) {
-        val sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        sp.edit().putLong(KEY_USER_ID, userId).apply()
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().putLong(KEY_USER_ID, userId).apply()
     }
 
     fun getUserId(context: Context): Long {
-        val sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        return sp.getLong(KEY_USER_ID, 0)
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getLong(KEY_USER_ID, 0)
     }
 
     // -------------------------
     // FCM TOKEN
     // -------------------------
-
     fun saveFcmToken(context: Context, token: String) {
-        val sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        sp.edit().putString(KEY_FCM, token).apply()
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().putString(KEY_FCM, token).apply()
     }
 
     fun getFcmToken(context: Context): String? {
-        val sp = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        return sp.getString(KEY_FCM, null)
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_FCM, null)
     }
 
     // -------------------------
     // PHONE
     // -------------------------
-
     fun savePhone(context: Context, phone: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit().putString(KEY_PHONE, phone).apply()
@@ -57,7 +57,6 @@ object LocalStorage {
     // -------------------------
     // JWT TOKEN
     // -------------------------
-
     fun saveToken(context: Context, token: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit().putString(KEY_TOKEN, token).apply()
@@ -71,7 +70,6 @@ object LocalStorage {
     // -------------------------
     // ROLE
     // -------------------------
-
     fun saveRole(context: Context, role: String) {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit().putString(KEY_ROLE, role).apply()
@@ -80,5 +78,23 @@ object LocalStorage {
     fun getRole(context: Context): String? {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .getString(KEY_ROLE, null)
+    }
+
+    // -------------------------
+    // 🔥 ACTIVE RIDE ID (NEW)
+    // -------------------------
+    fun saveActiveRideId(context: Context, rideId: Long) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().putLong(KEY_ACTIVE_RIDE_ID, rideId).apply()
+    }
+
+    fun getActiveRideId(context: Context): Long {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getLong(KEY_ACTIVE_RIDE_ID, -1L)
+    }
+
+    fun clearActiveRideId(context: Context) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().remove(KEY_ACTIVE_RIDE_ID).apply()
     }
 }

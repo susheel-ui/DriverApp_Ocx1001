@@ -65,8 +65,9 @@ interface ApiService {
         @Part driverLicense: MultipartBody.Part
     ): Call<ResponseBody>
 
-    @POST("/driver/accept-ride")
+    @POST("driver/accept-ride")
     fun acceptRide(
+        @Header("Authorization") authHeader: String,
         @Query("rideId") rideId: Long
     ): Call<Map<String, Any>>
 

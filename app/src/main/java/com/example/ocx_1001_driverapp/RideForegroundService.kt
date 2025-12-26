@@ -15,28 +15,41 @@ class RideForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        val pickup = intent?.getStringExtra("pickup") ?: "Pickup"
-        val drop = intent?.getStringExtra("drop") ?: "Drop"
+        if (intent == null) return START_NOT_STICKY
 
-        // 🔥 Full-screen popup intent
+        val rideId = intent.getLongExtra("rideId", -1L)
+        if (rideId == -1L) return START_NOT_STICKY
+
+        val pickup = intent.getStringExtra("pickup") ?: "Pickup"
+        val drop = intent.getStringExtra("drop") ?: "Drop"
+        val fare = intent.getStringExtra("fare") ?: "--"
+
+        // 🔥 STOP ANY OLD FOREGROUND INSTANCE
+        stopForeground(STOP_FOREGROUND_REMOVE)
+
+        // 🔥 FULL SCREEN POPUP INTENT
         val popupIntent = Intent(this, RideRequestPopupActivity::class.java).apply {
-            this.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra("rideId", rideId)
+            putExtra("pickup", pickup)
+            putExtra("drop", drop)
+            putExtra("fare", fare)
         }
-
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this,
-            100,
+            0,
             popupIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // 🔔 Notification (call category like Ola/Uber)
+        // 🔔 CALL STYLE NOTIFICATION
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Incoming Ride")
-            .setContentText("$pickup → $drop")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentText("$pickup → $drop | ₹$fare")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setOngoing(true)
             .setAutoCancel(false)
@@ -48,14 +61,6 @@ class RideForegroundService : Service() {
         return START_NOT_STICKY
     }
 
-    override fun onDestroy() {
-        stopForeground(true)
-        super.onDestroy()
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    // 🔔 Notification channel (MANDATORY Android 8+)
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -63,7 +68,7 @@ class RideForegroundService : Service() {
                 "Ride Requests",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Incoming ride notifications"
+                description = "Incoming ride requests"
                 lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             }
 
@@ -71,6 +76,13 @@ class RideForegroundService : Service() {
             manager.createNotificationChannel(channel)
         }
     }
+
+    override fun onDestroy() {
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
         const val CHANNEL_ID = "ride_request_channel"

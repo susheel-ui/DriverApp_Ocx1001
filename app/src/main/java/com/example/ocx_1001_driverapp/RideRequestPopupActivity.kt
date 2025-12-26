@@ -1,5 +1,6 @@
 package com.example.ocx_1001_driverapp
 
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.*
@@ -7,6 +8,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocx_1001_driverapp.api.ApiClient
 import retrofit2.Call
@@ -19,16 +21,18 @@ class RideRequestPopupActivity : AppCompatActivity() {
     private var vibrator: Vibrator? = null
     private var timer: CountDownTimer? = null
 
+    private var acceptInProgress = false
+    private var rideId: Long = -1L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ Android 8+ (Ola/Uber style)
+        // 🔥 REQUIRED FOR LOCK SCREEN
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
         }
 
-        // ✅ Old Android
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                     WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -36,22 +40,35 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_ride_popup)
 
+        // 🔒 DISABLE BACK BUTTON
+        onBackPressedDispatcher.addCallback(this) {
+            // disabled intentionally
+        }
+
         val txtMessage = findViewById<TextView>(R.id.txtMessage)
         val btnAccept = findViewById<Button>(R.id.btnAccept)
         val btnReject = findViewById<Button>(R.id.btnReject)
 
+        // 🔥 READ DATA
+        rideId = intent.getLongExtra("rideId", -1L)
         val pickup = intent.getStringExtra("pickup") ?: "Pickup"
         val drop = intent.getStringExtra("drop") ?: "Drop"
-        val rideId = intent.getLongExtra("rideId", -1L)
+        val fare = intent.getStringExtra("fare") ?: "--"
 
-        txtMessage.text = "New Ride Request\n$pickup → $drop"
+        txtMessage.text =
+            "New Ride Request\n$pickup → $drop\nFare: ₹$fare"
 
+        // 🔥 RESET + START ALERTS
+        stopAll()
         startSound()
         startVibration()
         startTimer(btnReject)
 
         // ================= ACCEPT =================
         btnAccept.setOnClickListener {
+
+            if (acceptInProgress) return@setOnClickListener
+            acceptInProgress = true
 
             if (rideId == -1L) {
                 Toast.makeText(this, "Invalid ride", Toast.LENGTH_SHORT).show()
@@ -60,9 +77,11 @@ class RideRequestPopupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            btnAccept.isEnabled = false // prevent double tap
+            btnAccept.isEnabled = false
 
-            ApiClient.api.acceptRide(rideId)
+            val token = "Bearer ${LocalStorage.getToken(this)}"
+
+            ApiClient.api.acceptRide(token, rideId)
                 .enqueue(object : Callback<Map<String, Any>> {
 
                     override fun onResponse(
@@ -72,17 +91,27 @@ class RideRequestPopupActivity : AppCompatActivity() {
                         stopAll()
 
                         if (response.isSuccessful) {
-                            // ✅ YOU GOT THE RIDE
+
+                            // 🔥 SAVE ACTIVE RIDE
+                            LocalStorage.saveActiveRideId(this@RideRequestPopupActivity, rideId)
+
                             Toast.makeText(
                                 this@RideRequestPopupActivity,
                                 "Ride accepted",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        } else {
-                            // ❌ SOMEONE ELSE ACCEPTED
+
+                            val intent = Intent(
+                                this@RideRequestPopupActivity,
+                                LiveRideActivity::class.java
+                            )
+                            intent.putExtra("rideId", rideId)
+                            startActivity(intent)
+                        }
+                        else {
                             Toast.makeText(
                                 this@RideRequestPopupActivity,
-                                "Someone already accepted this ride",
+                                "Ride not available",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -90,13 +119,13 @@ class RideRequestPopupActivity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                        stopAll()
+                        acceptInProgress = false
+                        btnAccept.isEnabled = true
                         Toast.makeText(
                             this@RideRequestPopupActivity,
                             "Network error",
                             Toast.LENGTH_SHORT
                         ).show()
-                        finish()
                     }
                 })
         }
@@ -108,8 +137,9 @@ class RideRequestPopupActivity : AppCompatActivity() {
         }
     }
 
-    // 🔊 Call-style sound
+    // 🔊 SOUND
     private fun startSound() {
+        mediaPlayer?.release()
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
                 AudioAttributes.Builder()
@@ -129,27 +159,29 @@ class RideRequestPopupActivity : AppCompatActivity() {
         }
     }
 
-    // 📳 Vibration
+    // 📳 VIBRATION
     private fun startVibration() {
+        vibrator?.cancel()
         vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator?.vibrate(
                 VibrationEffect.createWaveform(
-                    longArrayOf(0, 1000, 1000),
+                    longArrayOf(0, 800, 800),
                     0
                 )
             )
         } else {
-            vibrator?.vibrate(longArrayOf(0, 1000, 1000), 0)
+            vibrator?.vibrate(longArrayOf(0, 800, 800), 0)
         }
     }
 
-    // ⏱ Auto timeout
+    // ⏱ TIMER
     private fun startTimer(btnReject: Button) {
+        timer?.cancel()
         timer = object : CountDownTimer(15_000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                btnReject.text = "REJECT (${millisUntilFinished / 1000}s)"
+            override fun onTick(ms: Long) {
+                btnReject.text = "REJECT (${ms / 1000}s)"
             }
 
             override fun onFinish() {
@@ -161,11 +193,10 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
     private fun stopAll() {
         timer?.cancel()
+        timer = null
 
-        mediaPlayer?.apply {
-            stop()
-            release()
-        }
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
         mediaPlayer = null
 
         vibrator?.cancel()
@@ -174,9 +205,5 @@ class RideRequestPopupActivity : AppCompatActivity() {
     override fun onDestroy() {
         stopAll()
         super.onDestroy()
-    }
-    @Deprecated("Back disabled intentionally", level = DeprecationLevel.HIDDEN)
-    override fun onBackPressed() {
-        // ❌ Disable back
     }
 }
