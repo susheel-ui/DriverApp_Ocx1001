@@ -6,7 +6,12 @@ import android.os.*
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.ocx_1001_driverapp.api.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RideRequestPopupActivity : AppCompatActivity() {
 
@@ -17,13 +22,13 @@ class RideRequestPopupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ REQUIRED FOR ANDROID 8+ (Ola/Uber style)
+        // ✅ Android 8+ (Ola/Uber style)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
         }
 
-        // ✅ REQUIRED FOR OLD ANDROID
+        // ✅ Old Android
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
                     WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -37,6 +42,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
         val pickup = intent.getStringExtra("pickup") ?: "Pickup"
         val drop = intent.getStringExtra("drop") ?: "Drop"
+        val rideId = intent.getLongExtra("rideId", -1L)
 
         txtMessage.text = "New Ride Request\n$pickup → $drop"
 
@@ -44,18 +50,65 @@ class RideRequestPopupActivity : AppCompatActivity() {
         startVibration()
         startTimer(btnReject)
 
+        // ================= ACCEPT =================
         btnAccept.setOnClickListener {
-            stopAll()
-            finish()
+
+            if (rideId == -1L) {
+                Toast.makeText(this, "Invalid ride", Toast.LENGTH_SHORT).show()
+                stopAll()
+                finish()
+                return@setOnClickListener
+            }
+
+            btnAccept.isEnabled = false // prevent double tap
+
+            ApiClient.api.acceptRide(rideId)
+                .enqueue(object : Callback<Map<String, Any>> {
+
+                    override fun onResponse(
+                        call: Call<Map<String, Any>>,
+                        response: Response<Map<String, Any>>
+                    ) {
+                        stopAll()
+
+                        if (response.isSuccessful) {
+                            // ✅ YOU GOT THE RIDE
+                            Toast.makeText(
+                                this@RideRequestPopupActivity,
+                                "Ride accepted",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            // ❌ SOMEONE ELSE ACCEPTED
+                            Toast.makeText(
+                                this@RideRequestPopupActivity,
+                                "Someone already accepted this ride",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        finish()
+                    }
+
+                    override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                        stopAll()
+                        Toast.makeText(
+                            this@RideRequestPopupActivity,
+                            "Network error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        finish()
+                    }
+                })
         }
 
+        // ================= REJECT =================
         btnReject.setOnClickListener {
             stopAll()
             finish()
         }
     }
 
-    // 🔊 Proper call-style sound (Uber/Ola)
+    // 🔊 Call-style sound
     private fun startSound() {
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
@@ -66,7 +119,9 @@ class RideRequestPopupActivity : AppCompatActivity() {
             )
             setDataSource(
                 this@RideRequestPopupActivity,
-                android.net.Uri.parse("android.resource://${packageName}/${R.raw.ride_request_tone}")
+                android.net.Uri.parse(
+                    "android.resource://${packageName}/${R.raw.ride_request_tone}"
+                )
             )
             isLooping = true
             prepare()
@@ -74,7 +129,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
         }
     }
 
-    // 📳 Safe vibration (OEM friendly)
+    // 📳 Vibration
     private fun startVibration() {
         vibrator = getSystemService(VIBRATOR_SERVICE) as Vibrator
 
@@ -90,7 +145,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
         }
     }
 
-    // ⏱ Auto timeout (15 sec like Ola)
+    // ⏱ Auto timeout
     private fun startTimer(btnReject: Button) {
         timer = object : CountDownTimer(15_000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -120,8 +175,8 @@ class RideRequestPopupActivity : AppCompatActivity() {
         stopAll()
         super.onDestroy()
     }
-
+    @Deprecated("Back disabled intentionally", level = DeprecationLevel.HIDDEN)
     override fun onBackPressed() {
-        // ❌ Disable back (Uber/Ola behavior)
+        // ❌ Disable back
     }
 }

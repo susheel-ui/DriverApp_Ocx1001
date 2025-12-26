@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Core permissions (REQUIRED) -->
+    <!-- Core permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
-    <!-- Camera / uploads (KEEP because you use Aadhaar / PAN capture) -->
+    <!-- 🔥 REQUIRED FOR FULL SCREEN POPUP -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+
+    <!-- Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
@@ -25,16 +24,15 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.OCX_1001_DriverApp"
-        tools:targetApi="31">
+        android:theme="@style/Theme.OCX_1001_DriverApp">
 
-        <!-- 🔥 FOREGROUND SERVICE (MATCHES YOUR CODE) -->
+        <!-- 🔥 Foreground Service (FIXED) -->
         <service
             android:name=".RideForegroundService"
             android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:foregroundServiceType="phoneCall" />
 
-        <!-- 🔥 Firebase Messaging Service -->
+        <!-- Firebase Messaging -->
         <service
             android:name=".DriverFirebaseService"
             android:exported="false">
@@ -53,7 +51,7 @@
             </intent-filter>
         </activity>
 
-        <!-- 🔥 Full-screen Ride Request Popup -->
+        <!-- 🔥 Full-screen Popup -->
         <activity
             android:name=".RideRequestPopupActivity"
             android:exported="false"
@@ -69,13 +67,6 @@
         <activity android:name=".ResistrationDriver" android:exported="true" />
         <activity android:name=".Otp_VerificationActivity" android:exported="false" />
         <activity android:name=".DashboardActivity" android:exported="true" />
-
-        <!-- Document capture screens -->
-        <activity android:name=".uploadsscreen.CaptureAadhaarActivity" android:exported="true" />
-        <activity android:name=".CaptureSelfieActivity" android:exported="true" />
-        <activity android:name=".CapturePANActivity" android:exported="true" />
-        <activity android:name=".uploadsscreen.CaptureRCActivity" android:exported="true" />
-        <activity android:name=".uploadsscreen.CaptureDLActivity" android:exported="true" />
 
         <!-- File provider -->
         <provider

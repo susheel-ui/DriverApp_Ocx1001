@@ -65,4 +65,10 @@ interface ApiService {
         @Part driverLicense: MultipartBody.Part
     ): Call<ResponseBody>
 
+    @POST("/driver/accept-ride")
+    fun acceptRide(
+        @Query("rideId") rideId: Long
+    ): Call<Map<String, Any>>
+
+
 }
