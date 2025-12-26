@@ -20,50 +20,40 @@ interface ApiService {
         @Body body: SaveTokenBody
     ): Call<ResponseBody>
 
-    // ================= Owner REGISTER =================
-    // (WORKING – DO NOT CHANGE)
+    // ================= DRIVER REGISTER =================
 
     @Multipart
     @POST("driver/register")
     fun registerDriver(
         @Header("Authorization") authHeader: String,
-
         @Query("name") name: String,
-
         @Part photo1: MultipartBody.Part,
         @Part photo2: MultipartBody.Part,
         @Part photo3: MultipartBody.Part
     ): Call<ResponseBody>
 
-    // ================= VEHICLE REGISTER =================
-    // (FIXED – SAME STYLE AS DRIVER)
-
     @Multipart
     @POST("driver/registerVehicle")
     fun registerVehicle(
         @Header("Authorization") authHeader: String,
-
         @Query("vehicleNumber") vehicleNumber: String,
         @Query("city") city: String,
         @Query("vehicleType") vehicleType: String,
         @Query("vehicleSubType") vehicleSubType: String,
-
         @Part vehicleImage: MultipartBody.Part
     ): Call<ResponseBody>
-
-    //================= Driver REGISTER =================
 
     @Multipart
     @POST("driver/registerAssignedDriver")
     fun registerAssignedDriver(
         @Header("Authorization") authHeader: String,
-
         @Query("driveThisVehicle") driveThisVehicle: Boolean,
         @Query("driverName") driverName: String,
         @Query("driverPhone") driverPhone: String,
-
         @Part driverLicense: MultipartBody.Part
     ): Call<ResponseBody>
+
+    // ================= RIDE =================
 
     @POST("driver/accept-ride")
     fun acceptRide(
@@ -71,5 +61,21 @@ interface ApiService {
         @Query("rideId") rideId: Long
     ): Call<Map<String, Any>>
 
+    @GET("driver/ride/{rideId}")
+    fun getRideDetails(
+        @Header("Authorization") authHeader: String,
+        @Path("rideId") rideId: Long
+    ): Call<RideDetailsResponse>
 
+    @POST("driver/ride/{rideId}/start")
+    fun startTrip(
+        @Header("Authorization") authHeader: String,
+        @Path("rideId") rideId: Long
+    ): Call<Map<String, Any>>
+
+    @POST("driver/ride/{rideId}/end")
+    fun endTrip(
+        @Header("Authorization") authHeader: String,
+        @Path("rideId") rideId: Long
+    ): Call<Map<String, Any>>
 }

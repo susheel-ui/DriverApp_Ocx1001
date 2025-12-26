@@ -4,6 +4,10 @@
     <!-- 🌐 Core -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- 📍 LOCATION (REQUIRED FOR MAP + ROUTE) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <!-- 🔔 Notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
@@ -32,6 +36,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OCX_1001_DriverApp">
 
+        <!-- 🗺 GOOGLE MAPS API KEY -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCG4YVvKPVB_nruoVtL8RqS0ek8kxp69Xw" />
+
         <!-- 🔥 Foreground Service -->
         <service
             android:name=".RideForegroundService"
@@ -57,7 +66,7 @@
             </intent-filter>
         </activity>
 
-        <!-- 🔥 FULL SCREEN POPUP (IMPORTANT FIX HERE) -->
+        <!-- 🔥 FULL SCREEN POPUP -->
         <activity
             android:name=".RideRequestPopupActivity"
             android:exported="true"
@@ -66,6 +75,12 @@
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
             android:theme="@style/Theme.DriverApp.FullScreenPopup" />
+
+        <!-- 🚕 LIVE RIDE WITH MAP -->
+        <activity
+            android:name=".LiveRideActivity"
+            android:exported="false"
+            android:launchMode="singleTop" />
 
         <!-- Other screens -->
         <activity android:name=".LoginActivity" android:exported="true" />
@@ -86,4 +101,5 @@
         </provider>
 
     </application>
+
 </manifest>
