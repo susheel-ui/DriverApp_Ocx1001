@@ -78,4 +78,10 @@ interface ApiService {
         @Header("Authorization") authHeader: String,
         @Path("rideId") rideId: Long
     ): Call<Map<String, Any>>
+
+    @POST("driver/location")
+    fun sendDriverLocation(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, Double>
+    ): Call<Void>
 }

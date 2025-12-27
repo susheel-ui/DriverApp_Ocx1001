@@ -7,6 +7,7 @@
     <!-- 📍 LOCATION (REQUIRED FOR MAP + ROUTE) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
     <!-- 🔔 Notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -19,6 +20,9 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
+
 
     <!-- 📷 Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -46,6 +50,11 @@
             android:name=".RideForegroundService"
             android:exported="false"
             android:foregroundServiceType="phoneCall" />
+
+        <service
+            android:name=".DriverLocationService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
 
         <!-- 🔥 Firebase Messaging -->
         <service

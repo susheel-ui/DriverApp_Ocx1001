@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.ocx_1001_driverapp.api.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,7 +43,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
         // 🔒 DISABLE BACK BUTTON
         onBackPressedDispatcher.addCallback(this) {
-            // disabled intentionally
+            // intentionally disabled
         }
 
         val txtMessage = findViewById<TextView>(R.id.txtMessage)
@@ -92,8 +93,21 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
                         if (response.isSuccessful) {
 
-                            // 🔥 SAVE ACTIVE RIDE
-                            LocalStorage.saveActiveRideId(this@RideRequestPopupActivity, rideId)
+                            // ✅ SAVE ACTIVE RIDE
+                            LocalStorage.saveActiveRideId(
+                                this@RideRequestPopupActivity,
+                                rideId
+                            )
+
+                            // ✅ START DRIVER LIVE LOCATION SERVICE
+                            val locationServiceIntent = Intent(
+                                this@RideRequestPopupActivity,
+                                DriverLocationService::class.java
+                            )
+                            ContextCompat.startForegroundService(
+                                this@RideRequestPopupActivity,
+                                locationServiceIntent
+                            )
 
                             Toast.makeText(
                                 this@RideRequestPopupActivity,
@@ -107,8 +121,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
                             )
                             intent.putExtra("rideId", rideId)
                             startActivity(intent)
-                        }
-                        else {
+                        } else {
                             Toast.makeText(
                                 this@RideRequestPopupActivity,
                                 "Ride not available",
