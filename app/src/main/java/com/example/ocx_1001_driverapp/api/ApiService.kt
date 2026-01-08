@@ -84,4 +84,16 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: Map<String, Double>
     ): Call<Void>
+
+    @POST("/api/call/ride/connect")
+    fun callDriver(
+        @Header("Authorization") auth: String,
+        @Body body: Map<String, Long>
+    ): Call<String>
+
+    @GET("driver/driver/{driverId}/earning")
+    fun getDriverEarningByDriverId(
+        @Header("Authorization") authHeader: String,
+        @Path("driverId") driverId: Long
+    ): Call<DriverEarningResponse>
 }

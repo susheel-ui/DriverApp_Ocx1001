@@ -3,6 +3,7 @@ package com.example.ocx_1001_driverapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -27,7 +28,7 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var authHeader: String
 
     private lateinit var googleMap: GoogleMap
-    private var isMapReady = false   // ✅ ADDED
+    private var isMapReady = false
 
     private var pickupLat = 0.0
     private var pickupLng = 0.0
@@ -35,6 +36,7 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
     private var dropLng = 0.0
 
     private lateinit var txtInfo: TextView
+    private lateinit var btnCallUser: Button
     private lateinit var btnNavigatePickup: Button
     private lateinit var btnStartTrip: Button
     private lateinit var btnNavigateDrop: Button
@@ -46,20 +48,20 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
 
         onBackPressedDispatcher.addCallback(this) {}
 
-        // ================= MAP INIT =================
-        val mapFragment = supportFragmentManager
-            .findFragmentById(R.id.map) as SupportMapFragment
+        // MAP
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // ================= RIDE ID =================
+        // RIDE ID
         rideId = intent.getLongExtra("rideId", -1L)
-        if (rideId == -1L) {
+        if (rideId <= 0) {
             toast("Invalid ride")
             finish()
             return
         }
 
-        // ================= TOKEN =================
+        // TOKEN
         val token = LocalStorage.getToken(this)
         if (token.isNullOrEmpty()) {
             toast("Session expired")
@@ -68,8 +70,9 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         authHeader = "Bearer $token"
 
-        // ================= VIEWS =================
+        // VIEWS
         txtInfo = findViewById(R.id.txtRideInfo)
+        btnCallUser = findViewById(R.id.btnCallUser)
         btnNavigatePickup = findViewById(R.id.btnNavigatePickup)
         btnStartTrip = findViewById(R.id.btnStartTrip)
         btnNavigateDrop = findViewById(R.id.btnNavigateDrop)
@@ -77,6 +80,11 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
 
         resetButtons()
         fetchRideDetails()
+
+        // CALL USER
+        btnCallUser.setOnClickListener {
+            callUserViaBackend()
+        }
 
         btnNavigatePickup.setOnClickListener {
             openGoogleMaps(pickupLat, pickupLng)
@@ -95,9 +103,7 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // ==================================================
-    // MAP READY
-    // ==================================================
+    // ================= MAP =================
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
@@ -105,9 +111,23 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMap.uiSettings.isZoomControlsEnabled = true
     }
 
-    // ==================================================
-    // API
-    // ==================================================
+    private fun showPickupOnMap() {
+        if (!isMapReady) return
+        val pickup = LatLng(pickupLat, pickupLng)
+        googleMap.clear()
+        googleMap.addMarker(MarkerOptions().position(pickup).title("Pickup"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pickup, 15f))
+    }
+
+    private fun showDropOnMap() {
+        if (!isMapReady) return
+        val drop = LatLng(dropLat, dropLng)
+        googleMap.clear()
+        googleMap.addMarker(MarkerOptions().position(drop).title("Drop"))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drop, 15f))
+    }
+
+    // ================= API =================
 
     private fun fetchRideDetails() {
         ApiClient.api.getRideDetails(authHeader, rideId)
@@ -118,7 +138,7 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
                     response: Response<RideDetailsResponse>
                 ) {
                     if (!response.isSuccessful || response.body() == null) {
-                        toast("Failed to load ride")
+                        toast("Failed to load ride (${response.code()})")
                         return
                     }
 
@@ -140,53 +160,63 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
 
                 override fun onFailure(call: Call<RideDetailsResponse>, t: Throwable) {
-                    toast("Network error")
+                    t.printStackTrace()
+                    toast(t.message ?: "Network error")
                 }
             })
     }
 
-    // ==================================================
-    // MAP HELPERS
-    // ==================================================
+    // ================= CALL USER =================
 
-    private fun showPickupOnMap() {
-        if (!isMapReady) return
+    private fun callUserViaBackend() {
 
-        val pickup = LatLng(pickupLat, pickupLng)
-        googleMap.clear()
-        googleMap.addMarker(MarkerOptions().position(pickup).title("Pickup"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pickup, 15f))
+        val body = mapOf("rideId" to rideId)
+
+        ApiClient.api.callDriver(authHeader, body)
+            .enqueue(object : Callback<String> {
+
+                override fun onResponse(
+                    call: Call<String>,
+                    response: Response<String>
+                ) {
+                    if (response.isSuccessful) {
+                        toast(response.body() ?: "Calling user…")
+                    } else {
+                        toast("Call failed (${response.code()})")
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.e("CALL_API", "Error", t)
+                    toast(t.message ?: "Network error")
+                }
+            })
     }
 
-    private fun showDropOnMap() {
-        if (!isMapReady) return
 
-        val drop = LatLng(dropLat, dropLng)
-        googleMap.clear()
-        googleMap.addMarker(MarkerOptions().position(drop).title("Drop"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drop, 15f))
-    }
 
-    // ==================================================
-    // TRIP FLOW
-    // ==================================================
+
+    // ================= TRIP FLOW =================
 
     private fun startTrip() {
         ApiClient.api.startTrip(authHeader, rideId)
             .enqueue(object : Callback<Map<String, Any>> {
+
                 override fun onResponse(
                     call: Call<Map<String, Any>>,
                     response: Response<Map<String, Any>>
                 ) {
                     if (response.isSuccessful) {
                         toast("Trip started")
-                        showDropOnMap()
                         fetchRideDetails()
+                    } else {
+                        toast("Failed to start trip")
                     }
                 }
 
                 override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                    toast("Network error")
+                    t.printStackTrace()
+                    toast(t.message ?: "Network error")
                 }
             })
     }
@@ -194,23 +224,27 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun endTrip() {
         ApiClient.api.endTrip(authHeader, rideId)
             .enqueue(object : Callback<Map<String, Any>> {
+
                 override fun onResponse(
                     call: Call<Map<String, Any>>,
                     response: Response<Map<String, Any>>
                 ) {
-                    toast("Trip completed")
-                    finish()
+                    if (response.isSuccessful) {
+                        toast("Trip completed")
+                        finish()
+                    } else {
+                        toast("Failed to end trip")
+                    }
                 }
 
                 override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                    toast("Network error")
+                    t.printStackTrace()
+                    toast(t.message ?: "Network error")
                 }
             })
     }
 
-    // ==================================================
-    // UI
-    // ==================================================
+    // ================= UI =================
 
     private fun resetButtons() {
         btnNavigatePickup.visibility = View.GONE
@@ -226,16 +260,14 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
                 btnNavigatePickup.visibility = View.VISIBLE
                 btnStartTrip.visibility = View.VISIBLE
             }
-            "STARTED" -> {
+            "IN_PROGRESS", "STARTED" -> {
                 btnNavigateDrop.visibility = View.VISIBLE
                 btnEndTrip.visibility = View.VISIBLE
             }
         }
     }
 
-    // ==================================================
-    // UTILS
-    // ==================================================
+    // ================= UTILS =================
 
     private fun openGoogleMaps(lat: Double, lng: Double) {
         val uri = Uri.parse("google.navigation:q=$lat,$lng")

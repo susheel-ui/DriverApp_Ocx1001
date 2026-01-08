@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 🗺 GOOGLE MAP (ADDED) -->
+    <!-- 🗺 MAP -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        tools:context=".LiveRideActivity" />
+        android:layout_weight="1"/>
 
-    <!-- ================= EXISTING UI ================= -->
-
+    <!-- INFO -->
     <TextView
         android:id="@+id/txtRideInfo"
         android:textSize="18sp"
@@ -24,6 +21,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <!-- 📞 CALL USER -->
+    <Button
+        android:id="@+id/btnCallUser"
+        android:text="Call User"
+        android:textAllCaps="false"
+        android:layout_margin="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- NAVIGATION & TRIP FLOW -->
     <Button
         android:id="@+id/btnNavigatePickup"
         android:text="Navigate to Pickup"
