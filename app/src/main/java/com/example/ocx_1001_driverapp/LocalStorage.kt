@@ -15,6 +15,20 @@ object LocalStorage {
     // 🔥 NEW: ACTIVE RIDE ID
     private const val KEY_ACTIVE_RIDE_ID = "active_ride_id"
 
+    private const val AUTH_PREFS = "auth_prefs"
+
+    private const val KEY_IS_REGISTERED = "is_registered"
+
+    fun saveIsRegistered(context: Context, value: Boolean) {
+        val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("is_registered", value).apply()
+    }
+
+    fun isRegistered(context: Context): Boolean {
+        val prefs = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        return prefs.getBoolean("is_registered", false)
+    }
+
     // -------------------------
     // USER ID
     // -------------------------

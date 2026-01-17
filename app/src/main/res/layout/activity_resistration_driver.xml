@@ -120,11 +120,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
+        android:layout_marginTop="456dp"
+        android:backgroundTint="@color/color_primary"
         android:maxWidth="800dp"
         android:text="Register"
-        android:backgroundTint="@color/color_primary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/requrmentSpinner"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/requrmentSpinner" />
 </androidx.constraintlayout.widget.ConstraintLayout>

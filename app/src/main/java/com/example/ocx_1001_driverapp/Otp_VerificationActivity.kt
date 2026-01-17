@@ -86,6 +86,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
                     LocalStorage.saveToken(this@Otp_VerificationActivity, token)
                     LocalStorage.saveRole(this@Otp_VerificationActivity, role)
                     LocalStorage.saveUserId(this@Otp_VerificationActivity, userId)
+                    LocalStorage.saveIsRegistered(this@Otp_VerificationActivity, isRegistered)
 
                     Toast.makeText(
                         this@Otp_VerificationActivity,

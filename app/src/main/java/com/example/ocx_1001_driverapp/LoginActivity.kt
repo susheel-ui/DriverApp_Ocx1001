@@ -31,13 +31,14 @@ class LoginActivity : AppCompatActivity() {
 
             // Save phone
             LocalStorage.savePhone(this, phone)
+
+            // 🔴 ADDED: mark login started (prevents auto dashboard redirect)
+            getSharedPreferences("auth_prefs", MODE_PRIVATE)
+                .edit()
+                .putBoolean("is_registered", false)
+                .apply()
+
             callLoginApi(phone)
-
-
-//            // DIRECTLY OPEN REGISTRATION (TESTING ONLY)
-//            startActivity(
-//                Intent(this, RegistrationActivity::class.java)
-//            )
         }
     }
 
@@ -47,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://192.168.29.149:8080/auth/login")
+            .url("http://72.60.200.11:8080/auth/login")
             .post(body)
             .build()
 
@@ -80,11 +81,21 @@ class LoginActivity : AppCompatActivity() {
                             // Upload token immediately if available
                             uploadExistingToken()
 
-                            startActivity(Intent(this@LoginActivity, Otp_VerificationActivity::class.java))
+                            startActivity(
+                                Intent(
+                                    this@LoginActivity,
+                                    Otp_VerificationActivity::class.java
+                                )
+                            )
                         }
 
                         "NEED_REGISTER" -> {
-                            startActivity(Intent(this@LoginActivity, ResistrationDriver::class.java))
+                            startActivity(
+                                Intent(
+                                    this@LoginActivity,
+                                    ResistrationDriver::class.java
+                                )
+                            )
                         }
 
                         else -> Toast.makeText(
@@ -111,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://192.168.29.149:8080/api/driver/save-token")
+            .url("http://72.60.200.11:8080/api/driver/save-token")
             .post(body)
             .build()
 

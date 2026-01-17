@@ -79,8 +79,15 @@ class MainActivity : AppCompatActivity() {
 
             val token = LocalStorage.getToken(this)
 
+
+            val isRegistered = LocalStorage.isRegistered(this)
+
             if (token.isNullOrEmpty()) {
                 startActivity(Intent(this, LoginActivity::class.java))
+
+            } else if (!isRegistered) {
+                startActivity(Intent(this, RegistrationActivity::class.java))
+
             } else {
                 startActivity(Intent(this, DashboardActivity::class.java))
             }
@@ -88,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
     }
+
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
