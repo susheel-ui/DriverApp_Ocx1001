@@ -111,4 +111,6 @@ object LocalStorage {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
             .edit().remove(KEY_ACTIVE_RIDE_ID).apply()
     }
+
+
 }

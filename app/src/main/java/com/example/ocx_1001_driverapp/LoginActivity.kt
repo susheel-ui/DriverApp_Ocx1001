@@ -48,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://72.60.200.11:8080/auth/login")
+            .url("http://192.168.29.149:8080/auth/login")
             .post(body)
             .build()
 
@@ -122,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://72.60.200.11:8080/api/driver/save-token")
+            .url("http://192.168.29.149:8080/api/driver/save-token")
             .post(body)
             .build()
 

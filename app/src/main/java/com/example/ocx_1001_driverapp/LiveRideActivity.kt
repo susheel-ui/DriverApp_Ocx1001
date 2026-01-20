@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocx_1001_driverapp.api.ApiClient
+import com.example.ocx_1001_driverapp.api.CallRideRequest
 import com.example.ocx_1001_driverapp.api.RideDetailsResponse
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -21,6 +22,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.location.Geocoder
+import java.util.Locale
 
 class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -28,6 +31,8 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var authHeader: String
 
     private lateinit var googleMap: GoogleMap
+    private var pickupAddress: String? = null
+    private var dropAddress: String? = null
     private var isMapReady = false
 
     private var pickupLat = 0.0
@@ -87,19 +92,22 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btnNavigatePickup.setOnClickListener {
-            openGoogleMaps(pickupLat, pickupLng)
+            openGoogleMaps(pickupAddress, pickupLat, pickupLng)
         }
+
+        btnNavigateDrop.setOnClickListener {
+            openGoogleMaps(dropAddress, dropLat, dropLng)
+        }
+
 
         btnStartTrip.setOnClickListener {
             startTrip()
         }
 
-        btnNavigateDrop.setOnClickListener {
-            openGoogleMaps(dropLat, dropLng)
-        }
 
         btnEndTrip.setOnClickListener {
-            endTrip()
+
+            endTripAndGoToCollection()
         }
     }
 
@@ -118,6 +126,52 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
         googleMap.addMarker(MarkerOptions().position(pickup).title("Pickup"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pickup, 15f))
     }
+
+    private fun endTripAndGoToCollection() {
+
+        ApiClient.api.endTrip(authHeader, rideId)
+            .enqueue(object : Callback<Map<String, Any>> {
+
+                override fun onResponse(
+                    call: Call<Map<String, Any>>,
+                    response: Response<Map<String, Any>>
+                ) {
+                    if (response.isSuccessful) {
+
+                        // ✅ Trip ended successfully
+                        val intent = Intent(
+                            this@LiveRideActivity,
+                            CollectPaymentActivity::class.java
+                        )
+                        intent.putExtra("rideId", rideId) // ✅ ONLY rideId
+                        startActivity(intent)
+                        finish()
+
+                    } else {
+                        toast("Failed to end trip")
+                    }
+                }
+
+                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
+                    toast("Network error")
+                }
+            })
+    }
+
+
+    private fun getAddressFromLatLng(lat: Double, lng: Double): String? {
+        return try {
+            val geocoder = Geocoder(this, Locale.getDefault())
+            val list = geocoder.getFromLocation(lat, lng, 1)
+            if (!list.isNullOrEmpty()) {
+                list[0].getAddressLine(0)
+            } else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 
     private fun showDropOnMap() {
         if (!isMapReady) return
@@ -155,8 +209,11 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
                         Status: ${ride.status}
                     """.trimIndent()
 
+                    pickupAddress = getAddressFromLatLng(pickupLat, pickupLng)
+                    dropAddress = getAddressFromLatLng(dropLat, dropLng)
+
                     updateUIByStatus(ride.status)
-                    showPickupOnMap()
+
                 }
 
                 override fun onFailure(call: Call<RideDetailsResponse>, t: Throwable) {
@@ -168,11 +225,13 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
 
     // ================= CALL USER =================
 
+// ================= CALL USER =================
+
     private fun callUserViaBackend() {
 
-        val body = mapOf("rideId" to rideId)
+        val request = CallRideRequest(rideId)
 
-        ApiClient.api.callDriver(authHeader, body)
+        ApiClient.api.callRideConnect(authHeader, request)
             .enqueue(object : Callback<String> {
 
                 override fun onResponse(
@@ -192,6 +251,7 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             })
     }
+
 
 
 
@@ -221,28 +281,6 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
             })
     }
 
-    private fun endTrip() {
-        ApiClient.api.endTrip(authHeader, rideId)
-            .enqueue(object : Callback<Map<String, Any>> {
-
-                override fun onResponse(
-                    call: Call<Map<String, Any>>,
-                    response: Response<Map<String, Any>>
-                ) {
-                    if (response.isSuccessful) {
-                        toast("Trip completed")
-                        finish()
-                    } else {
-                        toast("Failed to end trip")
-                    }
-                }
-
-                override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
-                    t.printStackTrace()
-                    toast(t.message ?: "Network error")
-                }
-            })
-    }
 
     // ================= UI =================
 
@@ -255,26 +293,45 @@ class LiveRideActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun updateUIByStatus(status: String) {
         resetButtons()
+
         when (status) {
             "ACCEPTED" -> {
                 btnNavigatePickup.visibility = View.VISIBLE
                 btnStartTrip.visibility = View.VISIBLE
+                showPickupOnMap()
             }
+
             "IN_PROGRESS", "STARTED" -> {
                 btnNavigateDrop.visibility = View.VISIBLE
                 btnEndTrip.visibility = View.VISIBLE
+                showDropOnMap()
             }
         }
     }
 
+
     // ================= UTILS =================
 
-    private fun openGoogleMaps(lat: Double, lng: Double) {
-        val uri = Uri.parse("google.navigation:q=$lat,$lng")
+    private fun openGoogleMaps(address: String?, lat: Double, lng: Double) {
+
+        if (lat == 0.0 || lng == 0.0) {
+            toast("Location not available")
+            return
+        }
+
+        val destination = address ?: "$lat,$lng"
+
+        val uri = Uri.parse("google.navigation:q=${Uri.encode(destination)}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         intent.setPackage("com.google.android.apps.maps")
-        startActivity(intent)
+
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            toast("Google Maps not installed")
+        }
     }
+
 
     private fun toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()

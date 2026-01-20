@@ -1,5 +1,6 @@
 package com.example.ocx_1001_driverapp.api
 
+import com.example.ocx_1001_driverapp.api.Entites.body
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -81,6 +82,7 @@ interface ApiService {
 
     @GET("driver/driver/{driverId}/earning")
     fun getDriverEarningByDriverId(
+        @Header("Authorization") authHeader: String,
         @Path("driverId") driverId: Long
     ): Call<DriverEarningResponse>
 
@@ -89,5 +91,29 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body body: Map<String, Double>
     ): Call<Void>
+
+    @POST("api/call/ride/connect")
+    fun callRideConnect(
+        @Header("Authorization") token: String,
+        @Body request: CallRideRequest
+    ): Call<String>
+
+    @POST("driver/payment/verify")
+    fun verifyRazorpayPayment(
+        @Header("Authorization") token: String,
+        @Body body: RazorpayVerifyRequest
+    ): Call<Void>
+
+    @POST("driver/cash-collected")
+    fun cashCollected(
+        @Header("Authorization") authHeader: String,
+        @Body body: body
+    ): Call<Void>
+
+    @GET("driver/latest/fare")
+    fun getLatestFare(
+        @Header("Authorization") authHeader: String,
+        @Query("driverId") driverId: Long
+    ): Call<FareResponse>
 
 }

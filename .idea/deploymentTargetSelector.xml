@@ -13,7 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="Zarkit_Partner">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

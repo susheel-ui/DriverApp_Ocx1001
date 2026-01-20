@@ -102,6 +102,10 @@
         <activity android:name=".ResistrationDriver" android:exported="true" />
         <activity android:name=".Otp_VerificationActivity" android:exported="false" />
         <activity android:name=".DashboardActivity" android:exported="true" />
+        <activity android:name=".AllTripsActivity" android:exported="true" />
+        <activity android:name=".ProfileActivity" android:exported="true" />
+        <activity android:name=".TripHistoryActivity" android:exported="true" />
+        <activity android:name=".CollectPaymentActivity" android:exported="true" />
 
         <!-- 📁 File provider -->
         <provider
