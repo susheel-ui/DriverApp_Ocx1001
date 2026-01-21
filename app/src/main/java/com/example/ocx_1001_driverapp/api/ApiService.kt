@@ -15,6 +15,12 @@ interface ApiService {
         @Body body: VerifyOtpBody
     ): Call<ResponseBody>
 
+    @GET("driver/{id}")
+    fun getDriverDetails(
+        @Header("Authorization") token: String,
+        @Path("id") driverId: Long
+    ): retrofit2.Call<DriverDetailsResponse>
+
     @POST("api/driver/save-token")
     fun saveDriverToken(
         @Header("Authorization") authHeader: String,
@@ -115,5 +121,24 @@ interface ApiService {
         @Header("Authorization") authHeader: String,
         @Query("driverId") driverId: Long
     ): Call<FareResponse>
+
+    @POST("driver/online/{id}")
+    fun goOnline(
+        @Header("Authorization") token: String,
+        @Path("id") driverId: Long
+    ): Call<String>
+
+
+    @POST("driver/offline/{id}")
+    fun goOffline(
+        @Header("Authorization") token: String,
+        @Path("id") driverId: Long
+    ): Call<String>
+
+    @GET("driver/all-booking/{driverId}")
+    fun getAllTrips(
+        @Path("driverId") driverId: Int,
+        @Header("Authorization") token: String
+    ): Call<List<Trip>>
 
 }

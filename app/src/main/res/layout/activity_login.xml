@@ -15,35 +15,25 @@
         android:background="#FFFFFF"
         tools:context=".LoginActivity">
 
-        <!-- Porter Partner Logo -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="48dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Porter"
-                android:textColor="@color/color_primary"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" Partner"
-                android:textColor="#546E7A"
-                android:textSize="28sp"
-                />
-
-        </LinearLayout>
 
         <!-- Country Selector -->
+
+        <ImageView
+            android:id="@+id/delivery_image"
+            android:layout_width="312dp"
+            android:layout_height="216dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="16dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/zarkit_bgremove"
+            app:layout_constraintBottom_toTopOf="@+id/cardView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.493"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.045" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -145,16 +135,16 @@
         <!-- Checkboxes -->
         <CheckBox
             android:id="@+id/checkboxTerms"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginBottom="10dp"
             android:text="@string/i_have_read_and_agreed_to_terms_and_conditions_and_privacy_policy"
-            android:textColor="#333333"
-            android:layout_marginBottom="16dp" />
+            android:textColor="#333333" />
 
         <CheckBox
             android:id="@+id/checkboxTds"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
             android:text="@string/i_have_read_and_hereby_provide_my_consent_on_the_tds_declaration"
             android:textColor="#333333" />
 

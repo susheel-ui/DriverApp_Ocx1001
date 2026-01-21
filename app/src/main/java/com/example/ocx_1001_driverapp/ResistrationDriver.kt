@@ -53,7 +53,7 @@ class ResistrationDriver : AppCompatActivity() {
             val body = json.toRequestBody("application/json".toMediaType())
 
             val request = Request.Builder()
-                .url("http://172.20.10.2:8080/auth/register")
+                .url("http://72.60.200.11:8080/auth/register")
                 .addHeader("Content-Type", "application/json")
                 .post(body)
                 .build()

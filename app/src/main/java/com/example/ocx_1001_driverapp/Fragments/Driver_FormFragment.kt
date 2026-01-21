@@ -27,6 +27,7 @@ class Driver_FormFragment : Fragment() {
     private lateinit var nameEt: EditText
     private lateinit var phoneEt: EditText
     private lateinit var driveGroup: RadioGroup
+    private lateinit var loadingLayout: FrameLayout
 
     private var dlUri: Uri? = null
     private var isSubmitting = false
@@ -35,7 +36,7 @@ class Driver_FormFragment : Fragment() {
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-            if (success && isAdded) toast("Driving Licence captured")
+            if (success && isAdded) toast("Driving Licence captured ✅")
         }
 
     private val permissionLauncher =
@@ -55,8 +56,10 @@ class Driver_FormFragment : Fragment() {
         nameEt = view.findViewById(R.id.driverNameEt)
         phoneEt = view.findViewById(R.id.driverPhoneEt)
         driveGroup = view.findViewById(R.id.driveVehicleGroup)
+        loadingLayout = view.findViewById(R.id.loadingLayout)
 
         view.findViewById<TextView>(R.id.uploadDL).setOnClickListener {
+
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.CAMERA
@@ -87,10 +90,12 @@ class Driver_FormFragment : Fragment() {
                 nameEt.error = "Driver name required"
                 return
             }
+
             phone.length != 10 -> {
                 phoneEt.error = "Enter valid phone number"
                 return
             }
+
             dlUri == null -> {
                 toast("Upload driving licence")
                 return
@@ -103,6 +108,8 @@ class Driver_FormFragment : Fragment() {
             return
         }
 
+        // ✅ SHOW LOADER
+        showLoader()
         isSubmitting = true
 
         val licensePart = createImagePart("driverLicense", dlUri!!)
@@ -119,7 +126,10 @@ class Driver_FormFragment : Fragment() {
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
+
+                hideLoader()
                 isSubmitting = false
+
                 if (!isAdded) return
 
                 if (response.isSuccessful) {
@@ -131,8 +141,12 @@ class Driver_FormFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+
+                hideLoader()
                 isSubmitting = false
+
                 if (!isAdded) return
+
                 toast("Network error")
             }
         })
@@ -140,20 +154,35 @@ class Driver_FormFragment : Fragment() {
 
     // ================= HELPERS =================
 
+    private fun showLoader() {
+        loadingLayout.visibility = View.VISIBLE
+    }
+
+    private fun hideLoader() {
+        loadingLayout.visibility = View.GONE
+    }
+
     private fun openCamera() {
+
         val file = File(requireContext().cacheDir, "driver_dl.jpg")
+
         dlUri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
             file
         )
+
         cameraLauncher.launch(dlUri)
     }
 
     private fun createImagePart(key: String, uri: Uri): MultipartBody.Part {
-        val body = requireContext().contentResolver.openInputStream(uri)!!
+
+        val body = requireContext()
+            .contentResolver
+            .openInputStream(uri)!!
             .readBytes()
             .toRequestBody("image/jpeg".toMediaType())
+
         return MultipartBody.Part.createFormData(key, "$key.jpg", body)
     }
 

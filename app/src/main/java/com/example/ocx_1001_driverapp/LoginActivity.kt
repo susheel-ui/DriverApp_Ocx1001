@@ -21,6 +21,22 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initially disable login button
+        binding.buttonLogin.isEnabled = false
+        binding.buttonLogin.alpha = 0.5f // visually disabled
+
+        // Function to check checkboxes
+        fun updateLoginButtonState() {
+            val allChecked = binding.checkboxTerms.isChecked && binding.checkboxTds.isChecked
+            binding.buttonLogin.isEnabled = allChecked
+            binding.buttonLogin.alpha = if (allChecked) 1f else 0.5f
+        }
+
+        // Listen for checkbox changes
+        binding.checkboxTerms.setOnCheckedChangeListener { _, _ -> updateLoginButtonState() }
+        binding.checkboxTds.setOnCheckedChangeListener { _, _ -> updateLoginButtonState() }
+
+        // Login click
         binding.buttonLogin.setOnClickListener {
             val phone = binding.phoneEditText.text.toString().trim()
 
@@ -29,10 +45,10 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Save phone
+            // Save phone locally
             LocalStorage.savePhone(this, phone)
 
-            // 🔴 ADDED: mark login started (prevents auto dashboard redirect)
+            // Prevent auto dashboard redirect
             getSharedPreferences("auth_prefs", MODE_PRIVATE)
                 .edit()
                 .putBoolean("is_registered", false)
@@ -48,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://192.168.29.149:8080/auth/login")
+            .url("http://72.60.200.11:8080/auth/login")
             .post(body)
             .build()
 
@@ -71,16 +87,17 @@ class LoginActivity : AppCompatActivity() {
                     when (code) {
 
                         "OTP_SENT" -> {
-                            // Save userId (important)
+                            // Save userId
                             val userId = json.optLong("userId", 0)
                             if (userId != 0L) {
                                 LocalStorage.saveUserId(this@LoginActivity, userId)
                                 println("Saved userId = $userId")
                             }
 
-                            // Upload token immediately if available
+                            // Upload token immediately
                             uploadExistingToken()
 
+                            // Navigate to OTP screen
                             startActivity(
                                 Intent(
                                     this@LoginActivity,
@@ -122,17 +139,17 @@ class LoginActivity : AppCompatActivity() {
         val body = json.toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("http://192.168.29.149:8080/api/driver/save-token")
+            .url("http://72.60.200.11:8080/api/driver/save-token")
             .post(body)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                println("❌ Token upload failed in LoginActivity: ${e.message}")
+                println("❌ Token upload failed: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                println("✅ Token uploaded after login: ${response.code}")
+                println("✅ Token uploaded: ${response.code}")
             }
         })
     }

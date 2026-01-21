@@ -76,6 +76,44 @@
 
         </RelativeLayout>
 
+        <!-- Aadhaar Back Side Upload -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/upload_item_background"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Owner Aadhaar Back Side"
+                android:layout_centerVertical="true"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/uploadAadhaarBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/upload"
+                android:textColor="#2979FF"
+                android:drawableStart="@drawable/camera_icon"
+                android:drawablePadding="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
+
+            <ImageView
+                android:id="@+id/tickAadhaarBack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tick_green"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+
         <!-- PAN Card Upload -->
         <RelativeLayout
             android:layout_width="match_parent"
@@ -150,4 +188,21 @@
         </RelativeLayout>
     </LinearLayout>
     </ScrollView>
+    <FrameLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ProgressBar
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
 </FrameLayout>
+

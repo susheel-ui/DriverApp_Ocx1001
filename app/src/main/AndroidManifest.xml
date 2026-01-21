@@ -106,6 +106,12 @@
         <activity android:name=".ProfileActivity" android:exported="true" />
         <activity android:name=".TripHistoryActivity" android:exported="true" />
         <activity android:name=".CollectPaymentActivity" android:exported="true" />
+        <activity android:name=".SupportActivity" android:exported="true" />
+        <activity android:name=".UserProfileActivity" android:exported="true" />
+
+
+
+
 
         <!-- 📁 File provider -->
         <provider

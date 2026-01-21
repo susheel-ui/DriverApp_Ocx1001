@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    private const val BASE_URL = "http://192.168.29.149:8080/"
+    private const val BASE_URL = "http://72.60.200.11:8080/"
     //private const val BASE_URL = "http://172.20.10.3:8080/"
 
 

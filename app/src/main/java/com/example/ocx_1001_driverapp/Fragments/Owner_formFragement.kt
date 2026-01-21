@@ -25,8 +25,10 @@ import java.io.File
 class Owner_formFragement : Fragment() {
 
     private lateinit var nameInput: EditText
+    private lateinit var loadingLayout: View
 
     private var aadhaarUri: Uri? = null
+    private var aadhaarBackUri: Uri? = null
     private var panUri: Uri? = null
     private var selfieUri: Uri? = null
 
@@ -36,8 +38,35 @@ class Owner_formFragement : Fragment() {
     // ================= CAMERA =================
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+
             if (success && isAdded) {
-                toast("${currentType.replaceFirstChar { it.uppercase() }} captured")
+
+                when (currentType) {
+
+                    "aadhaar" -> {
+                        view?.findViewById<View>(R.id.tickAadhaar)?.visibility = View.VISIBLE
+                        view?.findViewById<View>(R.id.uploadAadhaar)?.visibility = View.GONE
+                        toast("Aadhaar Front captured")
+                    }
+
+                    "aadhaar_back" -> {
+                        view?.findViewById<View>(R.id.tickAadhaarBack)?.visibility = View.VISIBLE
+                        view?.findViewById<View>(R.id.uploadAadhaarBack)?.visibility = View.GONE
+                        toast("Aadhaar Back captured")
+                    }
+
+                    "pan" -> {
+                        view?.findViewById<View>(R.id.tickPan)?.visibility = View.VISIBLE
+                        view?.findViewById<View>(R.id.uploadPan)?.visibility = View.GONE
+                        toast("PAN captured")
+                    }
+
+                    "selfie" -> {
+                        view?.findViewById<View>(R.id.tickSelfie)?.visibility = View.VISIBLE
+                        view?.findViewById<View>(R.id.uploadSelfie)?.visibility = View.GONE
+                        toast("Selfie captured")
+                    }
+                }
             }
         }
 
@@ -55,15 +84,24 @@ class Owner_formFragement : Fragment() {
         val view = inflater.inflate(R.layout.fragment_owner_form_fragement, container, false)
 
         nameInput = view.findViewById(R.id.editTextName)
+        loadingLayout = view.findViewById(R.id.loadingLayout)
 
+        // Aadhaar Front
         view.findViewById<TextView>(R.id.uploadAadhaar).setOnClickListener {
             requestCamera("aadhaar")
         }
 
+        // Aadhaar Back
+        view.findViewById<TextView>(R.id.uploadAadhaarBack).setOnClickListener {
+            requestCamera("aadhaar_back")
+        }
+
+        // PAN
         view.findViewById<TextView>(R.id.uploadPan).setOnClickListener {
             requestCamera("pan")
         }
 
+        // Selfie
         view.findViewById<TextView>(R.id.uploadSelfie).setOnClickListener {
             requestCamera("selfie")
         }
@@ -77,7 +115,9 @@ class Owner_formFragement : Fragment() {
     }
 
     private fun openCamera(type: String) {
+
         val file = File(requireContext().cacheDir, "$type.jpg")
+
         val uri = FileProvider.getUriForFile(
             requireContext(),
             "${requireContext().packageName}.provider",
@@ -86,6 +126,7 @@ class Owner_formFragement : Fragment() {
 
         when (type) {
             "aadhaar" -> aadhaarUri = uri
+            "aadhaar_back" -> aadhaarBackUri = uri
             "pan" -> panUri = uri
             "selfie" -> selfieUri = uri
         }
@@ -100,7 +141,7 @@ class Owner_formFragement : Fragment() {
 
         val name = nameInput.text.toString().trim()
 
-        // ✅ VALIDATION (ALL REQUIRED)
+        // ✅ VALIDATION
         when {
             name.isEmpty() -> {
                 nameInput.error = "Name is required"
@@ -108,7 +149,11 @@ class Owner_formFragement : Fragment() {
                 return
             }
             aadhaarUri == null -> {
-                toast("Upload Aadhaar card")
+                toast("Upload Aadhaar Front")
+                return
+            }
+            aadhaarBackUri == null -> {
+                toast("Upload Aadhaar Back")
                 return
             }
             panUri == null -> {
@@ -128,10 +173,12 @@ class Owner_formFragement : Fragment() {
         }
 
         isSubmitting = true
+        showLoader()
 
         val photo1 = createPart("photo1", aadhaarUri!!)
         val photo2 = createPart("photo2", panUri!!)
         val photo3 = createPart("photo3", selfieUri!!)
+        val photo4 = createPart("photo4", aadhaarBackUri!!)
 
         ApiClient.api.registerDriver(
             authHeader = "Bearer $jwt",
@@ -139,6 +186,7 @@ class Owner_formFragement : Fragment() {
             photo1 = photo1,
             photo2 = photo2,
             photo3 = photo3
+            // photo4 add if backend accepts
         ).enqueue(object : Callback<ResponseBody> {
 
             override fun onResponse(
@@ -147,6 +195,8 @@ class Owner_formFragement : Fragment() {
             ) {
                 isSubmitting = false
                 if (!isAdded) return
+
+                hideLoader()
 
                 if (response.isSuccessful) {
                     toast("Owner details saved")
@@ -159,6 +209,8 @@ class Owner_formFragement : Fragment() {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 isSubmitting = false
                 if (!isAdded) return
+
+                hideLoader()
                 toast("Network error. Try again")
             }
         })
@@ -172,6 +224,15 @@ class Owner_formFragement : Fragment() {
         } ?: throw IllegalStateException("Cannot read file")
 
         return MultipartBody.Part.createFormData(key, "$key.jpg", body)
+    }
+
+    // ================= LOADER =================
+    private fun showLoader() {
+        loadingLayout.visibility = View.VISIBLE
+    }
+
+    private fun hideLoader() {
+        loadingLayout.visibility = View.GONE
     }
 
     private fun toast(msg: String) {

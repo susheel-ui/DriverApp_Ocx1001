@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:background="#F5F5F5"
+    android:layout_marginBottom="8dp"
+    android:clipToPadding="false">
+
+    <TextView
+        android:id="@+id/tvPickup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pickup: Ftb-2, 2"
+        android:textSize="16sp"
+        android:textColor="#333"/>
+
+    <TextView
+        android:id="@+id/tvDrop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Drop: C67, 6th Cross St..."
+        android:textSize="16sp"
+        android:textColor="#333"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/tvFare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fare: ₹164"
+        android:textSize="14sp"
+        android:textColor="#6200EE"
+        android:layout_marginTop="4dp"/>
+
+    <TextView
+        android:id="@+id/tvDistance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance: 1.5 km"
+        android:textSize="14sp"
+        android:textColor="#333"
+        android:layout_marginTop="2dp"/>
+</LinearLayout>
