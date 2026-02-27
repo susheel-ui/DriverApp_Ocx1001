@@ -3,206 +3,223 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Fragments.Owner_formFragement">
+
+    <!-- ================= CONTENT ================= -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
-        >
-        <!-- Name Input -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/name_compulsory"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp"/>
-        <EditText
-            android:id="@+id/editTextName"
+        android:fillViewport="true">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/name"
-            android:background="@drawable/edit_text_background"
-            android:padding="12dp"
-            android:layout_marginBottom="24dp"
-            />
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <!-- Upload Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/upload_the_following_compulsory"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="8dp"/>
-
-        <!-- Aadhaar Card Upload -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/upload_item_background"
-            android:padding="16dp"
-            android:layout_marginBottom="12dp">
+            <!-- ===== Owner Name ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/owner_aadhaar_card"
-                android:layout_centerVertical="true"
-                android:textColor="@android:color/black"/>
-            <TextView
-                android:id="@+id/uploadAadhaar"
-                android:layout_width="wrap_content"
+                android:text="@string/name_compulsory"
+                android:textColor="#212121"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <EditText
+                android:id="@+id/editTextName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/upload"
-                android:textColor="#2979FF"
-                android:drawableStart="@drawable/camera_icon"
-                android:drawablePadding="8dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-               />
+                android:hint="@string/name"
+                android:background="@drawable/edit_text_background"
+                android:padding="14dp"
+                android:textSize="15sp"
+                android:layout_marginBottom="24dp"/>
 
-            <ImageView
-                android:id="@+id/tickAadhaar"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tick_green"
-                android:layout_marginEnd="12dp"
-                android:layout_alignParentEnd="true"
-                android:visibility="gone"/>
-
-
-        </RelativeLayout>
-
-        <!-- Aadhaar Back Side Upload -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/upload_item_background"
-            android:padding="16dp"
-            android:layout_marginBottom="12dp">
-
+            <!-- ===== Upload Section Title ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Owner Aadhaar Back Side"
-                android:layout_centerVertical="true"
-                android:textColor="@android:color/black"/>
+                android:text="@string/upload_the_following_compulsory"
+                android:textColor="#212121"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp"/>
 
-            <TextView
-                android:id="@+id/uploadAadhaarBack"
-                android:layout_width="wrap_content"
+            <!-- ===== Aadhaar Front ===== -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/upload"
-                android:textColor="#2979FF"
-                android:drawableStart="@drawable/camera_icon"
-                android:drawablePadding="8dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
+                android:background="@drawable/upload_item_background"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
 
-            <ImageView
-                android:id="@+id/tickAadhaarBack"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tick_green"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="12dp"
-                android:visibility="gone"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/owner_aadhaar_card"
+                    android:textSize="14sp"
+                    android:textColor="#212121"
+                    android:layout_centerVertical="true"/>
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/uploadAadhaar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#2979FF"
+                    android:drawableStart="@drawable/camera_icon"
+                    android:drawablePadding="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
 
+                <ImageView
+                    android:id="@+id/tickAadhaar"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_tick_green"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="12dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
 
-        <!-- PAN Card Upload -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/upload_item_background"
-            android:padding="16dp"
-            android:layout_marginBottom="12dp">
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- ===== Aadhaar Back ===== -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/owner_pan_card"
-                android:layout_centerVertical="true"
-                android:textColor="@android:color/black"/>
-            <TextView
-                android:id="@+id/uploadPan"
-                android:layout_width="wrap_content"
+                android:background="@drawable/upload_item_background"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Owner Aadhaar Back Side"
+                    android:textSize="14sp"
+                    android:textColor="#212121"
+                    android:layout_centerVertical="true"/>
+
+                <TextView
+                    android:id="@+id/uploadAadhaarBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#2979FF"
+                    android:drawableStart="@drawable/camera_icon"
+                    android:drawablePadding="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+
+                <ImageView
+                    android:id="@+id/tickAadhaarBack"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_tick_green"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="12dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+            <!-- ===== PAN Card ===== -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/upload"
-                android:textColor="#2979FF"
-                android:drawableStart="@drawable/camera_icon"
-                android:drawablePadding="8dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                />
+                android:background="@drawable/upload_item_background"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp">
 
-            <ImageView
-                android:id="@+id/tickPan"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tick_green"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="12dp"
-                android:visibility="gone"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/owner_pan_card"
+                    android:textSize="14sp"
+                    android:textColor="#212121"
+                    android:layout_centerVertical="true"/>
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/uploadPan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#2979FF"
+                    android:drawableStart="@drawable/camera_icon"
+                    android:drawablePadding="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
 
-        <!-- Selfie Upload -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/upload_item_background"
-            android:padding="16dp">
-            <TextView
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/tickPan"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_tick_green"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="12dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+            <!-- ===== Selfie ===== -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/owner_selfie"
-                android:layout_centerVertical="true"
-                android:textColor="@android:color/black"/>
-            <TextView
-                android:id="@+id/uploadSelfie"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/upload"
-                android:textColor="#2979FF"
-                android:drawableStart="@drawable/camera_icon"
-                android:drawablePadding="8dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:gravity="center"
-                />
+                android:background="@drawable/upload_item_background"
+                android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/tickSelfie"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tick_green"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="12dp"
-                android:visibility="gone"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/driver_selfie"
+                    android:textSize="14sp"
+                    android:textColor="#212121"
+                    android:layout_centerVertical="true"/>
 
-        </RelativeLayout>
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/uploadSelfie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/upload"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="#2979FF"
+                    android:drawableStart="@drawable/camera_icon"
+                    android:drawablePadding="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+
+                <ImageView
+                    android:id="@+id/tickSelfie"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_tick_green"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="12dp"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+
+        </LinearLayout>
     </ScrollView>
+
+    <!-- ================= LOADING OVERLAY ================= -->
     <FrameLayout
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80000000"
+        android:gravity="center"
         android:visibility="gone"
         android:clickable="true"
         android:focusable="true">
 
         <ProgressBar
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"/>
-
+            android:layout_width="56dp"
+            android:layout_height="56dp"/>
     </FrameLayout>
 
 </FrameLayout>
-

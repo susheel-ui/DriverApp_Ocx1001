@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
+    android:id="@+id/rootLayout"
     tools:context=".RegistrationActivity">
 
     <!-- Header -->
@@ -15,24 +16,39 @@
         android:padding="16dp"
         android:background="@android:color/white">
 
+        <!-- Back Button (Left) -->
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/baseline_arrow_back_ios_24"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="Back" />
+
+        <!-- Title (Perfect Center) -->
         <TextView
+            android:id="@+id/titleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/owner_details"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_centerVertical="true"/>
+            android:layout_centerInParent="true" />
 
-<!--        <ImageView-->
-<!--            android:layout_width="24dp"-->
-<!--            android:layout_height="24dp"-->
-<!--            android:src="@drawable/ic_help_outline"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:contentDescription="Help" />-->
-        <!-- Note: ic_help_outline would be a vector asset in the drawable folder -->
+        <!-- Support Icon (Right) -->
+        <ImageView
+            android:id="@+id/supportButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_support"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="Help" />
+
     </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/verification_stepper"
         android:layout_width="match_parent"
@@ -152,8 +168,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:text="Next"
-            android:backgroundTint="#E0E0E0"
-            android:textColor="#A0A0A0"
+            android:backgroundTint="@color/color_primary"
+            android:textColor="@color/black"
             android:textSize="18sp"
             app:cornerRadius="8dp"/>
     </LinearLayout>

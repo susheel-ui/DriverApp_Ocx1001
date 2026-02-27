@@ -1,9 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.OCX_1001_DriverApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <!-- Base application theme. LIGHT ONLY -->
+    <style name="Base.Theme.OCX_1001_DriverApp" parent="Theme.Material3.Light.NoActionBar">
+
+        <!-- Edge To Edge Global -->
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>-->
+
+    </style>
+
+    <!-- GLOBAL RIPPLE STYLE -->
+    <style name="AppRippleStyle">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
     </style>
 
     <style name="Theme.OCX_1001_DriverApp" parent="Base.Theme.OCX_1001_DriverApp" />
+
 </resources>

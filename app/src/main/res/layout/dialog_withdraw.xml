@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/white"
+    android:elevation="8dp"
+    android:clipToPadding="false">
+
+    <!-- ===== BANK DETAILS ===== -->
+    <TextView
+        android:id="@+id/txtDialogAccountNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Account: Not available"
+        android:textSize="22sp"
+        android:textColor="#333333"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/txtDialogIfsc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="IFSC: Not available"
+        android:textSize="22sp"
+        android:textColor="#333333"
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- ===== Amount Input ===== -->
+    <EditText
+        android:id="@+id/edtAmount"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/edittext_border"
+        android:hint="Enter amount (Min ₹500)"
+        android:inputType="numberDecimal"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        android:textColor="#111111"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- ===== Info Text ===== -->
+    <TextView
+        android:id="@+id/txtInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Withdrawal will be processed within 2-3 working days"
+        android:textColor="#FF4444"
+        android:textSize="10sp"
+        android:fontFamily="sans-serif"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- ===== Submit Button ===== -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmitWithdraw"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
+        android:backgroundTint="@color/color_primary"
+        android:textColor="@android:color/white"
+        app:cornerRadius="24dp"
+        android:elevation="4dp"/>
+</LinearLayout>

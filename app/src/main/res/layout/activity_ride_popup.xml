@@ -1,64 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rootLayout"
-    android:background="#CC000000"
-    android:padding="24dp"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#99000000">
 
     <!-- CARD -->
     <LinearLayout
-        android:id="@+id/card"
+        android:id="@+id/rideRequestCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
         android:orientation="vertical"
         android:padding="24dp"
-        android:background="@drawable/popup_rounded_bg"
-        android:layout_centerInParent="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:elevation="20dp"
+        android:background="@drawable/bg_ride_card_pro">
 
-        <!-- TITLE -->
+        <!-- HEADER -->
         <TextView
-            android:id="@+id/txtMessage"
-            android:text="New Ride Request"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <!-- Timer -->
-        <TextView
-            android:id="@+id/txtTimer"
-            android:text="15"
-            android:textSize="48sp"
+            android:layout_height="wrap_content"
+            android:text="NEW RIDE REQUEST"
+            android:textColor="#1DB954"
             android:textStyle="bold"
-            android:textColor="@android:color/holo_red_dark"
-            android:gravity="center"
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:textSize="13sp"
+            android:letterSpacing="0.1"
+            android:layout_gravity="center_horizontal" />
 
-        <!-- Accept -->
-        <Button
-            android:id="@+id/btnAccept"
-            android:text="ACCEPT"
-            android:layout_marginTop="20dp"
-            android:background="@android:color/holo_green_dark"
-            android:textColor="@android:color/white"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <!-- FARE -->
+        <TextView
+            android:id="@+id/txtFare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₹250"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"/>
 
-        <!-- Reject -->
-        <Button
-            android:id="@+id/btnReject"
-            android:text="REJECT"
-            android:layout_marginTop="10dp"
-            android:background="@android:color/holo_red_dark"
-            android:textColor="@android:color/white"
+        <!-- DIVIDER -->
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="1dp"
+            android:background="#2C2C2E"
+            android:layout_marginVertical="18dp"/>
+
+        <!-- PICKUP -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="14dp">
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:backgroundTint="#1DB954"
+                android:background="@drawable/ic_pickup_marker"
+                android:layout_marginTop="6dp"/>
+
+            <TextView
+                android:id="@+id/txtPickup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="Pickup Location"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <!-- DROP -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:backgroundTint="#FF3B30"
+                android:background="@drawable/ic_drop_marker"
+                android:layout_marginTop="6dp"/>
+
+            <TextView
+                android:id="@+id/txtDrop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="12dp"
+                android:text="Drop Location"
+                android:textColor="#B3B3B3"
+                android:textSize="15sp"/>
+        </LinearLayout>
+
+        <!-- BUTTONS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReject"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:text="REJECT"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                app:backgroundTint="#FF3B30"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAccept"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:text="ACCEPT"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="14dp"
+                app:backgroundTint="#1DB954"/>
+
+        </LinearLayout>
 
     </LinearLayout>
-
-</RelativeLayout>
+</FrameLayout>

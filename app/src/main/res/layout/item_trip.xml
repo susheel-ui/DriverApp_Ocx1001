@@ -4,43 +4,132 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="12dp"
-    android:background="#F5F5F5"
-    android:layout_marginBottom="8dp"
-    android:clipToPadding="false">
+    android:padding="16dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/bg_trip_card"
+    android:elevation="6dp">
 
+    <!-- Ride ID -->
     <TextView
-        android:id="@+id/tvPickup"
+        android:id="@+id/tvRideId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pickup: Ftb-2, 2"
-        android:textSize="16sp"
-        android:textColor="#333"/>
-
-    <TextView
-        android:id="@+id/tvDrop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Drop: C67, 6th Cross St..."
-        android:textSize="16sp"
-        android:textColor="#333"
-        android:layout_marginTop="4dp"/>
-
-    <TextView
-        android:id="@+id/tvFare"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fare: ₹164"
+        android:text="Ride ID: #12345"
         android:textSize="14sp"
-        android:textColor="#6200EE"
-        android:layout_marginTop="4dp"/>
+        android:textColor="#616161"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
 
-    <TextView
-        android:id="@+id/tvDistance"
-        android:layout_width="wrap_content"
+    <!-- Pickup Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Distance: 1.5 km"
-        android:textSize="14sp"
-        android:textColor="#333"
-        android:layout_marginTop="2dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_pickup_marker"/>
+
+        <TextView
+            android:id="@+id/tvPickup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:text="Pickup: Ftb-2, 2"
+            android:textSize="15sp"
+            android:textColor="#212121"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <!-- Drop Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_drop_marker"/>
+
+        <TextView
+            android:id="@+id/tvDrop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:text="Drop: C67, 6th Cross Street"
+            android:textSize="15sp"
+            android:textColor="#212121"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="12dp"
+        android:background="#E0E0E0"/>
+
+    <!-- Fare & Distance Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvFare"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="₹164"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2E7D32"/>
+
+        <TextView
+            android:id="@+id/tvDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.5 km"
+            android:textSize="14sp"
+            android:textColor="#616161"/>
+    </LinearLayout>
+
+    <!-- Payment Status & Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/tvPaymentStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Payment: Not Paid"
+            android:textSize="14sp"
+            android:textColor="#D32F2F"
+            android:textStyle="bold"/>
+
+        <Button
+            android:id="@+id/btnPay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pay Now"
+            android:visibility="visible"
+            android:backgroundTint="#FFB300"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
 </LinearLayout>

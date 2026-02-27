@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- 🌐 Core -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- 📍 LOCATION (REQUIRED FOR MAP + ROUTE) -->
+    <!-- 📍 LOCATION -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
-    <!-- 🔔 Notifications (Android 13+) -->
+    <!-- 🔔 Notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- 🔊 Wake + vibration -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- 🔥 Full screen / call style -->
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- 🔥 Foreground services -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <!-- 📷 Camera -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -30,6 +29,11 @@
         android:name="android.hardware.camera"
         android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- ✅ REQUIRED FOR ANDROID 11+ (MUST BE HERE) -->
+    <queries>
+        <package android:name="com.google.android.apps.maps" />
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -44,17 +48,18 @@
         <!-- 🗺 GOOGLE MAPS API KEY -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCG4YVvKPVB_nruoVtL8RqS0ek8kxp69Xw" />
+            android:value="AIzaSyBO2XTkgKOQ0ItAjGyxi_g406jnvFeg4zo" />
 
-        <!-- 🔥 Foreground Service -->
+        <!-- 🔥 Razorpay -->
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="rzp_live_S0hfvT0Yw14rlq"/>
+
+        <!-- 🔥 Foreground Services -->
         <service
             android:name=".RideForegroundService"
             android:exported="false"
             android:foregroundServiceType="phoneCall" />
-
-        <meta-data
-            android:name="com.razorpay.ApiKey"
-            android:value="rzp_live_S0hfvT0Yw14rlq"/>
 
         <service
             android:name=".DriverLocationService"
@@ -90,7 +95,7 @@
             android:excludeFromRecents="true"
             android:theme="@style/Theme.DriverApp.FullScreenPopup" />
 
-        <!-- 🚕 LIVE RIDE WITH MAP -->
+        <!-- 🚕 LIVE RIDE -->
         <activity
             android:name=".LiveRideActivity"
             android:exported="false"
@@ -103,15 +108,11 @@
         <activity android:name=".Otp_VerificationActivity" android:exported="false" />
         <activity android:name=".DashboardActivity" android:exported="true" />
         <activity android:name=".AllTripsActivity" android:exported="true" />
-        <activity android:name=".ProfileActivity" android:exported="true" />
-        <activity android:name=".TripHistoryActivity" android:exported="true" />
         <activity android:name=".CollectPaymentActivity" android:exported="true" />
         <activity android:name=".SupportActivity" android:exported="true" />
         <activity android:name=".UserProfileActivity" android:exported="true" />
-
-
-
-
+        <activity android:name=".QrPaymentActivity" android:exported="true" />
+        <activity android:name=".WithdrawRequestsActivity" android:exported="true" />
 
         <!-- 📁 File provider -->
         <provider

@@ -4,23 +4,48 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:background="@color/white">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/iv_scooter_container"
+        android:layout_width="145dp"
+        android:layout_height="72dp">
+
+        <ImageView
+            android:id="@+id/iv_scooter_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/zarkit_yellowbg" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- FrameLayout to hold QR Image and loader -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="508dp">
+
+        <ImageView
+            android:id="@+id/imgQr"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFF"
+            android:contentDescription="QR Code"
+            android:scaleType="fitCenter" />
+
+        <ProgressBar
+            android:id="@+id/qrLoader"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <TextView
-        android:text="Scan to Pay (Test Mode)"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <ImageView
-        android:id="@+id/imgQr"
-        android:layout_width="300dp"
-        android:layout_height="300dp" />
-
-    <TextView
-        android:text="Use Razorpay Test UPI"
+        android:text="Use Razorpay UPI"
         android:layout_marginTop="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

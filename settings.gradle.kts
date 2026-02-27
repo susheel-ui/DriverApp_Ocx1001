@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "OCX_1001_DriverApp"
+rootProject.name = "Zarkit_Partner"
 include(":app")
  

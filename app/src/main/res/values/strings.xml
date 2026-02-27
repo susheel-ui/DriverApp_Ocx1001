@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">OCX_1001_DriverApp</string>
+    <string name="app_name" translatable="false">Zarkit Partner</string>
     <string name="select_language">Select Language</string>
     <string name="i_have_read_and_agreed_to_terms_and_conditions_and_privacy_policy">I have read and agreed to Terms and Conditions and Privacy Policy</string>
     <string name="i_have_read_and_hereby_provide_my_consent_on_the_tds_declaration">I have read and hereby provide my consent on the TDS Declaration</string>
@@ -28,7 +28,7 @@
     <string name="upload_the_following_compulsory">Upload the following *</string>
     <string name="owner_aadhaar_card">Owner Aadhaar Card</string>
     <string name="owner_pan_card">Owner PAN Card</string>
-    <string name="owner_selfie">Owner Selfie</string>
+    <string name="driver_selfie">Driver Selfie</string>
     <string name="owner_details">Owner Details</string>
     <string name="vehicle">Vehicle</string>
     <string name="driver">Driver</string>

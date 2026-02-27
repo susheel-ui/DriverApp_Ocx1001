@@ -4,18 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Fragments.Driver_FormFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- ================= MAIN CONTENT ================= -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#D1CECE"
-        tools:context=".AddDriverDetailsActivity"
-        >
+        android:layout_height="match_parent">
 
-
-
+        <!-- Top Divider -->
         <View
             android:id="@+id/header_divider"
             android:layout_width="0dp"
@@ -25,40 +22,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Submit Button Container -->
+        <!-- ================= FORM ================= -->
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/header_divider"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            >
+            app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <!-- Stepper View -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="24dp">
-
-
-
-                </LinearLayout>
-
-                <!-- Driving vehicle radio group -->
+                <!-- ===== Driving Vehicle ===== -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="I will be driving this vehicle *"
-                    android:textColor="@android:color/black"
+                    android:textColor="#212121"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="8dp"/>
 
                 <RadioGroup
@@ -67,117 +54,121 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginBottom="24dp">
+
                     <RadioButton
                         android:id="@+id/radio_yes"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="yes"
+                        android:text="Yes"
                         android:layout_marginEnd="32dp"/>
+
                     <RadioButton
                         android:id="@+id/radio_no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="no"
+                        android:text="No"
                         android:checked="true"/>
                 </RadioGroup>
 
-                <!-- Driver Name -->
+                <!-- ===== Driver Name ===== -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/driver_name_compolsory"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="8dp"/>
+                    android:textColor="#212121"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp"/>
+
                 <EditText
                     android:id="@+id/driverNameEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/driver_name"
                     android:background="@drawable/edit_text_background"
-                    android:padding="12dp"
+                    android:padding="14dp"
+                    android:textSize="15sp"
                     android:layout_marginBottom="24dp"/>
 
-                <!-- Driver Phone Number -->
+                <!-- ===== Driver Phone ===== -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/driver_phone_number_compulsory"
-                    android:textColor="@android:color/black"
-                    android:layout_marginBottom="8dp"/>
+                    android:textColor="#212121"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp"/>
+
                 <EditText
                     android:id="@+id/driverPhoneEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/driver_phone_number"
                     android:background="@drawable/edit_text_background"
-                    android:padding="12dp"
+                    android:padding="14dp"
+                    android:textSize="15sp"
+                    android:inputType="phone"
                     android:layout_marginBottom="24dp"/>
 
-                <!-- Upload Driver License -->
+                <!-- ===== Upload License ===== -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/upload_driver_license"
-                    android:textColor="@android:color/black"
-
+                    android:textColor="#212121"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="8dp"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_background"
+                    android:background="@drawable/upload_item_background"
                     android:padding="16dp"
-                    android:layout_marginBottom="24dp">
+                    android:layout_marginBottom="32dp">
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_centerVertical="true">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Driving Licence"
-                            android:textColor="@android:color/black" />
-                    </LinearLayout>
+                        android:text="Driving Licence"
+                        android:textSize="14sp"
+                        android:textColor="#212121"
+                        android:layout_centerVertical="true"/>
 
                     <TextView
                         android:id="@+id/uploadDL"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
+                        android:text="@string/upload"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#2979FF"
                         android:drawableStart="@drawable/camera_icon"
                         android:drawablePadding="8dp"
-                        android:gravity="center"
-                        android:text="@string/upload"
-                        android:textColor="#2979FF" />
-
-
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"/>
                 </RelativeLayout>
-
 
             </LinearLayout>
         </ScrollView>
 
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Loader Overlay -->
+    <!-- ================= LOADER ================= -->
     <FrameLayout
         android:id="@+id/loadingLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#80000000"
         android:gravity="center"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
 
         <ProgressBar
-            android:layout_width="60dp"
-            android:layout_height="60dp" />
-
+            android:layout_width="56dp"
+            android:layout_height="56dp"/>
     </FrameLayout>
-
 
 </FrameLayout>

@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ocx_1001_driverapp"
+    namespace = "com.zarkit.zarkit_partner"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.ocx_1001_driverapp"
+        applicationId = "com.zarkit.zarkit_partner"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,12 +61,12 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.0")
 // Optional (Night mode, LR enhancements)
     implementation("androidx.camera:camera-extensions:1.3.0")
-    implementation("com.google.firebase:firebase-messaging")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
+    implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")

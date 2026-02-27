@@ -1,9 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <!-- 🔙 HEADER WITH BACK BUTTON -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#FFFFFF"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_back"
+            android:padding="8dp"
+            android:layout_centerVertical="true"
+            android:contentDescription="Back"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Trip"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
 
     <!-- 🗺 MAP -->
     <androidx.fragment.app.FragmentContainerView
@@ -22,37 +48,97 @@
         android:layout_height="wrap_content"/>
 
     <!-- 📞 CALL USER -->
-    <Button
-        android:id="@+id/btnCallUser"
-        android:text="Call User"
-        android:textAllCaps="false"
-        android:layout_margin="12dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
     <!-- NAVIGATION & TRIP FLOW -->
-    <Button
-        android:id="@+id/btnNavigatePickup"
-        android:text="Navigate to Pickup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+
+
+    <ImageButton
+        android:id="@+id/btnCallUser"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_call_circle_ripple"
+        android:clickable="true"
+        android:contentDescription="Call User"
+        android:elevation="6dp"
+        android:focusable="true"
+        android:padding="16dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_call_white_24"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnStartTrip"
-        android:text="START TRIP"
+        android:id="@+id/btnNavigatePickup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="52dp"
+        android:layout_margin="5dp"
+        android:text="Navigate to Pickup"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#2E7D32"/>
+
+    <RelativeLayout
+        android:id="@+id/dragStartTrip"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/bg_drag_button"
+        android:padding="4dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:text="DRAG TO START TRIP"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <FrameLayout
+            android:id="@+id/sliderStartTrip"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_slider_circle"/>
+    </RelativeLayout>
+
 
     <Button
         android:id="@+id/btnNavigateDrop"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_margin="5dp"
         android:text="Navigate to Drop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#1565C0"/>
 
-    <Button
-        android:id="@+id/btnEndTrip"
-        android:text="END TRIP"
+    <RelativeLayout
+        android:id="@+id/dragEndTrip"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="56dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/bg_drag_button_red"
+        android:padding="4dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:text="DRAG TO END TRIP"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <FrameLayout
+            android:id="@+id/sliderEndTrip"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_slider_circle"/>
+    </RelativeLayout>
+
 
 </LinearLayout>

@@ -1,31 +1,203 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F6F7F9"
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/txtFare"
-        android:text="Collect ₹0"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/btnQr"
-        android:text="Pay via QR"
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btnCash"
-        android:text="Cash Collected"
-        android:layout_marginTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <!-- HEADER -->
+        <TextView
+            android:text="Collect Cash"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-</LinearLayout>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/iv_scooter_container"
+            android:layout_width="145dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/iv_scooter_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/zarkit_yellowbg"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- AMOUNT -->
+        <TextView
+            android:id="@+id/txtFare"
+            android:text="Collect ₹0"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#111111"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- TRIP ID -->
+        <TextView
+            android:id="@+id/txtTripId"
+            android:text="Trip ID: #NY-98231 • Completed"
+            android:textSize="14sp"
+            android:textColor="#6B7280"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- PAYMENT BREAKDOWN CARD -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginBottom="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="PAYMENT BREAKDOWN"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <!-- ROW -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Ride Fare"
+                    android:textSize="16sp"
+                    android:textColor="#374151"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txtRideFare"
+                    android:text="₹410.00"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- ROW -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Taxes and Fees"
+                    android:textSize="16sp"
+                    android:textColor="#374151"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txtTaxes"
+                    android:text="₹0.00"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- DIVIDER -->
+            <View
+                android:layout_marginVertical="12dp"
+                android:background="#E5E7EB"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <!-- TOTAL -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="Total Amount"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txtTotal"
+                    android:text="₹450.00"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#2563EB"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- INFO -->
+        <TextView
+            android:text="Please ensure the exact amount is collected from the passenger before confirming."
+            android:textSize="14sp"
+            android:textColor="#6B7280"
+            android:layout_marginBottom="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- PAY VIA QR -->
+        <Button
+            android:id="@+id/btnQr"
+            android:text="Pay via QR"
+            android:background="@drawable/bg_btn_outline"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"/>
+
+        <!-- CASH COLLECTED -->
+        <RelativeLayout
+            android:id="@+id/dragCash"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_drag_button"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="DRAG TO CONFIRM CASH"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:gravity="center"/>
+
+            <FrameLayout
+                android:id="@+id/sliderCash"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_slider_circle"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+</ScrollView>

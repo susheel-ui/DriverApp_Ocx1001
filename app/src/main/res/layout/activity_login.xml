@@ -1,185 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
+    android:id="@+id/rootLayout"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    android:background="@drawable/bg_login_card">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:background="#FFFFFF"
-        tools:context=".LoginActivity">
+    <!-- ================= LOGO ================= -->
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="48dp"
+        android:src="@drawable/zarkit_nobgblacklogo"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- ================= BOTTOM CARD ================= -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/loginCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="28dp"
+        app:cardElevation="10dp"
+        app:layout_constraintTop_toBottomOf="@id/imgLogo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Country Selector -->
-
-        <ImageView
-            android:id="@+id/delivery_image"
-            android:layout_width="312dp"
-            android:layout_height="216dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="16dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/zarkit_bgremove"
-            app:layout_constraintBottom_toTopOf="@+id/cardView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.493"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.045" />
-
+        <!-- Card Content -->
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-             android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
-            android:layout_marginBottom="40dp">
+            android:layout_width="match_parent"
+            android:layout_height="485dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <!-- Placeholder for India Flag -->
-            <TextView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="#FF9800"
-                android:gravity="center"
-                android:text="🇮🇳"
-                android:textSize="16sp"/>
-
+            <!-- Welcome -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/india"
-                android:textColor="#000000"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/change"
-                android:textColor="@color/color_primary"
-                android:textSize="16sp"
+                android:text="Welcome Partner"
+                android:layout_marginTop="32dp"
+                android:textColor="@android:color/black"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
-        </LinearLayout>
-
-        <!-- This is a placeholder for the background drawable.
-             In a real Android project, country_selector_bg.xml would be in the res/drawable folder.
-        <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-            <solid android:color="#F1F1F1"/>
-            <corners android:radius="20dp"/>
-        </shape>
-        -->
-
-
-        <!-- Mobile Number Label -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/mobile_number"
-            android:textColor="#757575"
-            android:textSize="14sp" />
-
-        <!-- Mobile Number Input -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+91"
-                android:textColor="#000000"
-                android:textSize="18sp"
-                android:paddingEnd="8dp"/>
+                android:layout_marginTop="4dp"
+                android:text="Login with your mobile number to continue"
+                android:textColor="#6B7280"
+                android:textSize="14sp" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="24dp"
-                android:background="#BDBDBD"/>
+            <!-- Phone Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/edit_text_border"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp">
 
-            <EditText
-                android:id="@+id/phoneEditText"
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+91"
+                    android:textColor="#111827"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:background="#D1D5DB" />
+
+                <EditText
+                    android:id="@+id/phoneEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="Enter mobile number"
+                    android:inputType="phone"
+                    android:textColor="#111827"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- ================= CHECKBOX TERMS ================= -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/checkboxTerms"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:inputType="phone"
-                android:background="@android:color/transparent"
-                android:hint="Enter mobile number"
-                android:textColor="#000000"
-                android:textSize="18sp" />
+                android:layout_marginTop="18dp"
+                android:minHeight="48dp"
+                android:padding="4dp"
+                android:text="@string/i_have_read_and_agreed_to_terms_and_conditions_and_privacy_policy"
+                android:textColor="#374151"
+                android:textSize="12sp"
+                app:buttonIconTint="@android:color/white"
+                app:buttonTint="@color/checkbox_yellow_tint" />
+
+            <!-- ================= CHECKBOX TDS ================= -->
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/checkboxTds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:padding="4dp"
+                android:text="@string/i_have_read_and_hereby_provide_my_consent_on_the_tds_declaration"
+                android:textColor="#374151"
+                android:textSize="12sp"
+                app:buttonIconTint="@android:color/white"
+                app:buttonTint="@color/checkbox_yellow_tint" />
+
+            <!-- ================= LOGIN BUTTON ================= -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/color_primary"
+                android:text="Login"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="18dp" />
+
         </LinearLayout>
 
-        <!-- Underline for the input -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#BDBDBD"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp"/>
+    </com.google.android.material.card.MaterialCardView>
 
-        <!-- Checkboxes -->
-        <CheckBox
-            android:id="@+id/checkboxTerms"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/i_have_read_and_agreed_to_terms_and_conditions_and_privacy_policy"
-            android:textColor="#333333" />
-
-        <CheckBox
-            android:id="@+id/checkboxTds"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="@string/i_have_read_and_hereby_provide_my_consent_on_the_tds_declaration"
-            android:textColor="#333333" />
-
-        <!-- Spacer to push the login button to the bottom -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-        <!-- Login Button -->
-        <Button
-            android:id="@+id/buttonLogin"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="LOGIN"
-            android:backgroundTint="@color/color_primary"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
-    </LinearLayout>
-    <FrameLayout
-        android:id="@+id/LanguageSelectorListView"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:visibility="gone"
-        android:background="@drawable/bottom_popup_bg"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
-        <include
-            android:id="@+id/IncludedLayout_language"
-            layout="@layout/language_selector_layout"
-
-            />
-
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
