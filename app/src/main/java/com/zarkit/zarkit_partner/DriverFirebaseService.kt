@@ -1,3 +1,4 @@
+
 package com.zarkit.zarkit_partner
 
 import android.content.Intent
@@ -14,7 +15,6 @@ class DriverFirebaseService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        println("🔥 MESSAGE RECEIVED")
         super.onMessageReceived(message)
 
         val data = message.data

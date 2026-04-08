@@ -14,7 +14,7 @@ object PaymentHelper {
     ) {
 
         val checkout = Checkout()
-        checkout.setKeyID("rzp_test_SFEc0SwSaQSBkk") // 🔥 Replace with LIVE in Production
+        checkout.setKeyID("rzp_live_SLcuOJ3u5G5ItH")
 
         val commissionValue =
             abs(commissionText.replace("₹", "").toDoubleOrNull() ?: 0.0)
