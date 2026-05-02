@@ -100,7 +100,7 @@ interface ApiService {
         @Body body: Map<String, Double>
     ): Call<Void>
 
-    @POST("api/call/ride/connect")
+    @POST("api/ride/connect")
     fun callRideConnect(
         @Header("Authorization") token: String,
         @Body request: CallRideRequest
