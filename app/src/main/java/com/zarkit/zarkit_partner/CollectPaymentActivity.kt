@@ -26,6 +26,7 @@ class CollectPaymentActivity : AppCompatActivity() {
 
     private lateinit var txtFare: TextView
     private lateinit var txtRideFare: TextView
+    private lateinit var txtTaxes: TextView
     private lateinit var txtTotal: TextView
     private lateinit var btnQr: Button
 
@@ -38,6 +39,7 @@ class CollectPaymentActivity : AppCompatActivity() {
 
         txtFare = findViewById(R.id.txtFare)
         txtRideFare = findViewById(R.id.txtRideFare)
+        txtTaxes = findViewById(R.id.txtTaxes)
         txtTotal = findViewById(R.id.txtTotal)
         btnQr = findViewById(R.id.btnQr)
 
@@ -187,9 +189,14 @@ class CollectPaymentActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body() != null) {
                         amount = response.body()!!.finalFare
 
-                        txtFare.text = "Collect ₹$amount"
-                        txtRideFare.text = "₹$amount"
-                        txtTotal.text = "₹$amount"
+                        val totalAmount = amount.toDouble()
+                        val gstAmount = totalAmount * 0.18
+                        val rideFare = totalAmount - gstAmount
+
+                        txtFare.text = "Collect ₹${String.format("%.2f", totalAmount)}"
+                        txtRideFare.text = "₹${String.format("%.2f", rideFare)}"
+                        txtTaxes.text = "₹${String.format("%.2f", gstAmount)}"
+                        txtTotal.text = "₹${String.format("%.2f", totalAmount)}"
 
                         btnQr.isEnabled = true
                         dragCash.visibility = View.VISIBLE

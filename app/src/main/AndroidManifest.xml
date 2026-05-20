@@ -28,7 +28,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />-->
 
     <!-- ✅ REQUIRED FOR ANDROID 11+ (MUST BE HERE) -->
     <queries>

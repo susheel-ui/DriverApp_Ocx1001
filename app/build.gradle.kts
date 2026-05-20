@@ -12,9 +12,8 @@ android {
         applicationId = "com.zarkit.zarkit_partner"
         minSdk = 24
         targetSdk = 35
-        versionCode = 2
-
-        versionName = "1.0.1"
+        versionCode = 8
+        versionName = "1.0.8"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -51,14 +50,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    // CameraX core libraries
-    implementation("androidx.camera:camera-core:1.3.1")
-    implementation("androidx.camera:camera-camera2:1.3.1")
-    implementation("androidx.camera:camera-lifecycle:1.3.1")
-// CameraX View for PreviewView
-    implementation("androidx.camera:camera-view:1.3.0")
-// Optional (Night mode, LR enhancements)
-    implementation("androidx.camera:camera-extensions:1.3.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

@@ -164,7 +164,7 @@ class LoginActivity : AppCompatActivity() {
                     when (code) {
 
                         // ✅ OTP Case
-                        "OTP_SENT" -> handleOtpSent(json)
+                        "OTP_SENT", "DUMMY_OTP_SENT" -> handleOtpSent(json)
 
                         // ✅ NEED REGISTER Case
                         "NEED_REGISTER" -> {

@@ -183,7 +183,7 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
     ) {
 
         val checkout = Checkout()
-        checkout.setKeyID("rzp_test_SFEc0SwSaQSBkk")
+        checkout.setKeyID("rzp_live_SLcuOJ3u5G5ItH")
 
         try {
 
