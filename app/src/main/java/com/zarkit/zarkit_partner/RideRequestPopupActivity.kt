@@ -7,6 +7,7 @@ import android.media.MediaPlayer
 import android.os.*
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -16,6 +17,7 @@ import com.zarkit.zarkit_partner.api.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.view.WindowCompat
 
 class RideRequestPopupActivity : AppCompatActivity() {
 
@@ -41,6 +43,12 @@ class RideRequestPopupActivity : AppCompatActivity() {
         )
 
         setContentView(R.layout.activity_ride_popup)
+
+        // ✅ ADD THIS
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        setContentView(R.layout.activity_ride_popup)
+
 
         // 🔒 Disable back
         onBackPressedDispatcher.addCallback(this) {}
@@ -165,6 +173,34 @@ class RideRequestPopupActivity : AppCompatActivity() {
             stopAll()
             finish()
         }
+    }
+
+    private fun startAutoRejectTimer() {
+        val TOTAL_SECONDS = 30
+        val progressBar = findViewById<ProgressBar>(R.id.timerProgressBar)
+        val tvTimerLabel = findViewById<TextView>(R.id.tvTimerLabel)
+        val btnReject    = findViewById<Button>(R.id.btnReject)
+
+        progressBar.max      = TOTAL_SECONDS
+        progressBar.progress = TOTAL_SECONDS
+
+        object : CountDownTimer(TOTAL_SECONDS * 1000L, 1000L) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft = (millisUntilFinished / 1000).toInt()
+                progressBar.progress = secondsLeft
+                tvTimerLabel.text    = "ऑटो रिजेक्ट टाइमर: $secondsLeft सेकेंड"
+                btnReject.text       = "REJECT\n(${secondsLeft}S)"
+            }
+
+            override fun onFinish() {
+                progressBar.progress = 0
+                tvTimerLabel.text    = "ऑटो रिजेक्ट टाइमर: 0 सेकेंड"
+                // Auto reject
+                btnReject.performClick()
+            }
+
+        }.start()
     }
 
     // ================= SOUND =================

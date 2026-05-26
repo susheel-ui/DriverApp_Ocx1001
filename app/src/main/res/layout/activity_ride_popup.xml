@@ -1,130 +1,310 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#99000000">
+    android:background="#0A0A0A">
 
-    <!-- CARD -->
-    <LinearLayout
-        android:id="@+id/rideRequestCard"
-        android:layout_width="match_parent"
+    <!-- ===== TOP GLOW EFFECT ===== -->
+    <View
+        android:id="@+id/topGlow"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
+        android:background="@drawable/bg_top_glow"
+        android:alpha="0.35"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- ===== PULSE RING (decorative) ===== -->
+    <TextView
+        android:id="@+id/tvPulseIcon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="40dp"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:background="@drawable/zarkit_yellowbg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- ===== HEADER TITLE ===== -->
+    <TextView
+        android:id="@+id/tvNewRideTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_margin="16dp"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:elevation="20dp"
-        android:background="@drawable/bg_ride_card_pro">
+        android:layout_marginTop="10dp"
+        android:text="नई राइड रिक्वेस्ट"
+        android:textColor="#1DB954"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.03"
+        app:layout_constraintTop_toBottomOf="@id/tvPulseIcon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- HEADER -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="NEW RIDE REQUEST"
-            android:textColor="#1DB954"
-            android:textStyle="bold"
-            android:textSize="13sp"
-            android:letterSpacing="0.1"
-            android:layout_gravity="center_horizontal" />
+    <TextView
+        android:id="@+id/tvNewRideSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="आपके लिए एक नया ऑर्डर आया है"
+        android:textColor="#777777"
+        android:textSize="13sp"
+        app:layout_constraintTop_toBottomOf="@id/tvNewRideTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- FARE -->
-        <TextView
-            android:id="@+id/txtFare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="₹250"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"/>
+    <!-- ===== FARE ===== -->
+    <TextView
+        android:id="@+id/txtFare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="₹229.0"
+        android:textColor="#FFFFFF"
+        android:textSize="52sp"
+        android:textStyle="bold"
+        android:letterSpacing="-0.02"
+        app:layout_constraintTop_toBottomOf="@id/tvNewRideSubtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- DIVIDER -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#2C2C2E"
-            android:layout_marginVertical="18dp"/>
+    <!-- ===== LOCATION CARD ===== -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/locationCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="14dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#161618"
+        app:layout_constraintTop_toBottomOf="@id/txtFare"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- PICKUP -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="14dp">
+            android:orientation="vertical"
+            android:padding="18dp">
 
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:backgroundTint="#1DB954"
-                android:background="@drawable/ic_pickup_marker"
-                android:layout_marginTop="6dp"/>
-
-            <TextView
-                android:id="@+id/txtPickup"
-                android:layout_width="0dp"
+            <!-- PICKUP ROW -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="12dp"
-                android:text="Pickup Location"
-                android:textColor="#FFFFFF"
-                android:textSize="15sp"/>
-        </LinearLayout>
+                android:orientation="horizontal">
 
-        <!-- DROP -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="28dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal">
 
-            <View
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:backgroundTint="#FF3B30"
-                android:background="@drawable/ic_drop_marker"
-                android:layout_marginTop="6dp"/>
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_pickup_marker"/>
 
-            <TextView
-                android:id="@+id/txtDrop"
-                android:layout_width="0dp"
+                    <View
+                        android:layout_width="2dp"
+                        android:layout_height="44dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:background="@drawable/close_line_icon"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PICKUP  •  उठाने की जगह"
+                        android:textColor="#1DB954"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.08"/>
+
+                    <TextView
+                        android:id="@+id/txtPickup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="Pickup Location"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="3dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- DROP ROW -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="12dp"
-                android:text="Drop Location"
-                android:textColor="#B3B3B3"
-                android:textSize="15sp"/>
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
 
-        <!-- BUTTONS -->
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_drop_marker"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DROP  •  पहुंचाने की जगह"
+                        android:textColor="#FF3B30"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.08"/>
+
+                    <TextView
+                        android:id="@+id/txtDrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:text="Drop Location"
+                        android:textColor="#BBBBBB"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="3dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- DIVIDER -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="#242426"/>
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- ===== REJECT / ACCEPT BUTTONS ===== -->
+    <LinearLayout
+        android:id="@+id/btnLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="18dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/locationCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- REJECT -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnReject"
-                android:layout_width="0dp"
-                android:layout_height="54dp"
-                android:layout_weight="1"
-                android:text="REJECT"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="REJECT&#10;(30S)"
                 android:textColor="#FFFFFF"
-                app:cornerRadius="14dp"
-                app:backgroundTint="#FF3B30"/>
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:lineSpacingExtra="-2dp"
+                app:cornerRadius="18dp"
+                app:backgroundTint="#FF3B30"
+                app:strokeColor="#FF6B60"
+                app:strokeWidth="1dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:text="रद्द करें"
+                android:textColor="#555555"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <View android:layout_width="12dp" android:layout_height="1dp"/>
+
+        <!-- ACCEPT -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAccept"
-                android:layout_width="0dp"
-                android:layout_height="54dp"
-                android:layout_weight="1"
-                android:layout_marginStart="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:text="ACCEPT"
                 android:textColor="#FFFFFF"
-                app:cornerRadius="14dp"
-                app:backgroundTint="#1DB954"/>
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="18dp"
+                app:backgroundTint="#1DB954"
+                app:strokeColor="#3DCC6A"
+                app:strokeWidth="1dp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:text="स्वीकार करें"
+                android:textColor="#555555"
+                android:textSize="12sp"/>
         </LinearLayout>
 
     </LinearLayout>
-</FrameLayout>
+
+    <!-- ===== TIMER PROGRESS BAR ===== -->
+    <ProgressBar
+        android:id="@+id/timerProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="20dp"
+        android:max="30"
+        android:progress="30"
+        android:progressDrawable="@drawable/timer_progress_drawable"
+        app:layout_constraintTop_toBottomOf="@id/btnLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- ===== TIMER LABEL ===== -->
+    <TextView
+        android:id="@+id/tvTimerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="ऑटो रिजेक्ट टाइमर: 30 सेकेंड"
+        android:textColor="#444444"
+        android:textSize="11sp"
+        android:letterSpacing="0.02"
+        app:layout_constraintTop_toBottomOf="@id/timerProgressBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
