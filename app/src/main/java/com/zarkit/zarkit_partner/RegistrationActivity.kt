@@ -14,7 +14,7 @@ import com.zarkit.zarkit_partner.Fragments.Vehicle_formFragment
 import com.zarkit.zarkit_partner.UtilityClasses.Utility
 import com.zarkit.zarkit_partner.databinding.ActivityResistrationBinding
 
-class RegistrationActivity : AppCompatActivity() {
+class RegistrationActivity : BaseActivity() {
 
     private lateinit var binding: ActivityResistrationBinding
 
@@ -61,14 +61,33 @@ class RegistrationActivity : AppCompatActivity() {
         vehicleFormfragement = Vehicle_formFragment()
         driverFormfragement = Driver_FormFragment()
 
-        currentFragment = ownerFormfragement
+        val savedStep = LocalStorage.getRegistrationStep(this)
 
-        // ================= LOAD FIRST FRAGMENT =================
-        Utility.changeFragment(
-            this,
-            binding.fragmentContainerView,
-            ownerFormfragement
-        )
+        when (savedStep) {
+            0 -> {
+                currentFragment = ownerFormfragement
+                Utility.changeFragment(this, binding.fragmentContainerView, ownerFormfragement)
+            }
+            1 -> {
+                currentFragment = vehicleFormfragement
+                binding.ownerSelectorTV.setBackgroundResource(R.drawable.stepper_circle_complete)
+                binding.vehicleSelectorTV.setBackgroundResource(R.drawable.stepper_circle_active)
+                binding.ownerTV.setTextColor(resources.getColor(R.color.gray))
+                binding.vehicleTV.setTextColor(resources.getColor(R.color.color_primary))
+                Utility.changeFragment(this, binding.fragmentContainerView, vehicleFormfragement)
+            }
+            2 -> {
+                currentFragment = driverFormfragement
+                binding.ownerSelectorTV.setBackgroundResource(R.drawable.stepper_circle_complete)
+                binding.vehicleSelectorTV.setBackgroundResource(R.drawable.stepper_circle_complete)
+                binding.driverSelectorTV.setBackgroundResource(R.drawable.stepper_circle_active)
+                binding.ownerTV.setTextColor(resources.getColor(R.color.gray))
+                binding.vehicleTV.setTextColor(resources.getColor(R.color.gray))
+                binding.driverTV.setTextColor(resources.getColor(R.color.color_primary))
+                binding.buttonSubmit.text = getString(R.string.submit)
+                Utility.changeFragment(this, binding.fragmentContainerView, driverFormfragement)
+            }
+        }
 
         // ================= SUBMIT BUTTON =================
         binding.buttonSubmit.setOnClickListener {
@@ -100,6 +119,7 @@ class RegistrationActivity : AppCompatActivity() {
                             vehicleFormfragement
                         )
                         currentFragment = vehicleFormfragement
+                        LocalStorage.saveRegistrationStep(this, 1)
                     }
                 }
 
@@ -130,6 +150,7 @@ class RegistrationActivity : AppCompatActivity() {
                         currentFragment = driverFormfragement
 
                         binding.buttonSubmit.text = getString(R.string.submit)
+                        LocalStorage.saveRegistrationStep(this, 2)
                     }
                 }
 
@@ -138,6 +159,7 @@ class RegistrationActivity : AppCompatActivity() {
                     val form = currentFragment as Driver_FormFragment
 
                     form.submitDriver {
+                        LocalStorage.clearRegistrationStep(this)
                         startActivity(
                             Intent(this, DashboardActivity::class.java)
                         )

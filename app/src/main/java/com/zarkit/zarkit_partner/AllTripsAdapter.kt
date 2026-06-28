@@ -4,17 +4,20 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Button
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.zarkit.zarkit_partner.api.Trip
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class AllTripsAdapter(private val trips: List<Trip>) :
     RecyclerView.Adapter<AllTripsAdapter.TripViewHolder>() {
 
     class TripViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val tvRideId: TextView = view.findViewById(R.id.tvRideId)   // ✅ ADDED
+        val tvRideId: TextView = view.findViewById(R.id.tvRideId)
+        val tvRideStatus: TextView = view.findViewById(R.id.tvRideStatus)
 
         val tvPickup: TextView = view.findViewById(R.id.tvPickup)
         val tvDrop: TextView = view.findViewById(R.id.tvDrop)
@@ -23,6 +26,14 @@ class AllTripsAdapter(private val trips: List<Trip>) :
 
         val tvPaymentStatus: TextView = view.findViewById(R.id.tvPaymentStatus)
         val btnPay: Button = view.findViewById(R.id.btnPay)
+
+        val tvDateTime: TextView = view.findViewById(R.id.tvDateTime)
+
+        // ✅ Naye views add kiye
+        val tvDriverEarning: TextView = view.findViewById(R.id.tvDriverEarning)
+        val tvGst: TextView = view.findViewById(R.id.tvGst)
+        val tvCommission: TextView = view.findViewById(R.id.tvCommission)
+        val tvTotalFare: TextView = view.findViewById(R.id.tvTotalFare)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
@@ -34,55 +45,133 @@ class AllTripsAdapter(private val trips: List<Trip>) :
     override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
 
         val trip = trips[position]
+        val context = holder.itemView.context
 
-        // ✅ SET RIDE ID
-        holder.tvRideId.text = "Ride ID: ${trip.id}"
+        val rideStatus = trip.status ?: "PENDING"
+        val paymentStatus = trip.paymentStatus ?: "PENDING"
+
+        holder.tvRideId.text = "Ride ID: ${trip.id ?: ""}"
+
+        val fare = trip.finalFare ?: 0.0
+
+        // ✅ Calculations
+        val driverEarning = trip.driverRideEarning ?: 0.0
+        val gst = Math.round(fare * 0.18 / 1.18).toInt()   // GST included inside fare
+        val zarkitCommission = Math.round(fare - gst - driverEarning).toInt()
+        val userTotal = fare.toInt()
 
         holder.tvPickup.text = "Pickup: ${trip.pickupAddress ?: ""}"
         holder.tvDrop.text = "Drop: ${trip.dropAddress ?: ""}"
-        holder.tvFare.text = "Fare: ₹${trip.finalFare ?: 0}"
+        holder.tvFare.text = "Fare: ₹${fare.toInt()}"
+        holder.btnPay.text = "Pay ₹$userTotal"
         holder.tvDistance.text = trip.distanceText ?: ""
 
-        val status = trip.paymentStatus ?: "PENDING"
+        holder.tvRideStatus.text = "Status: $rideStatus"
+        holder.tvPaymentStatus.text = "Payment: $paymentStatus"
+        holder.tvRideId.text = "Ride ID: ${trip.id ?: ""}"
 
-        holder.tvPaymentStatus.text = "Payment: $status"
+        // ✅ Breakdown bind
+        holder.tvDriverEarning.text = "₹${driverEarning.toInt()}"
+        holder.tvGst.text = "₹$gst"
+        holder.tvCommission.text = "₹$zarkitCommission"
+        holder.tvTotalFare.text = "₹$userTotal"
 
-        when (status.uppercase()) {
+        trip.createdAt?.let {
+
+            try {
+
+                val input = LocalDateTime.parse(it)
+
+                val outputFormatter =
+                    DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a")
+
+                holder.tvDateTime.text =
+                    input.format(outputFormatter)
+
+            } catch (e: Exception) {
+
+                holder.tvDateTime.text = it
+            }
+        }
+
+        when (rideStatus.uppercase()) {
+            "COMPLETED" -> {
+                holder.tvRideStatus.setTextColor(
+                    context.getColor(android.R.color.holo_green_dark)
+                )
+            }
+
+            "CANCELLED" -> {
+                holder.tvRideStatus.setTextColor(
+                    context.getColor(android.R.color.holo_red_dark)
+                )
+            }
+
+            "STARTED", "ACCEPTED" -> {
+                holder.tvRideStatus.setTextColor(
+                    context.getColor(android.R.color.holo_blue_dark)
+                )
+            }
+
+            "PENDING" -> {
+                holder.tvRideStatus.setTextColor(
+                    context.getColor(android.R.color.darker_gray)
+                )
+            }
+
+            else -> {
+                holder.tvRideStatus.setTextColor(
+                    context.getColor(android.R.color.darker_gray)
+                )
+            }
+        }
+
+        when (paymentStatus.uppercase()) {
 
             "PENDING" -> {
                 holder.tvPaymentStatus.setTextColor(
-                    holder.itemView.context.getColor(android.R.color.holo_red_dark)
+                    context.getColor(android.R.color.holo_red_dark)
                 )
-                holder.btnPay.visibility = View.VISIBLE
+
+                holder.btnPay.visibility =
+                    if (rideStatus.uppercase() == "CANCELLED") {
+                        View.GONE
+                    } else {
+                        View.VISIBLE
+                    }
             }
 
             "ONLINE_PAY" -> {
                 holder.tvPaymentStatus.setTextColor(
-                    holder.itemView.context.getColor(android.R.color.holo_blue_dark)
+                    context.getColor(android.R.color.holo_blue_dark)
                 )
                 holder.btnPay.visibility = View.GONE
             }
 
             "CASH" -> {
                 holder.tvPaymentStatus.setTextColor(
-                    holder.itemView.context.getColor(android.R.color.holo_green_dark)
+                    context.getColor(android.R.color.holo_green_dark)
                 )
                 holder.btnPay.visibility = View.GONE
             }
 
             else -> {
                 holder.tvPaymentStatus.setTextColor(
-                    holder.itemView.context.getColor(android.R.color.darker_gray)
+                    context.getColor(android.R.color.darker_gray)
                 )
                 holder.btnPay.visibility = View.GONE
             }
         }
 
+        if (rideStatus.uppercase() == "CANCELLED") {
+            holder.btnPay.visibility = View.GONE
+        }
+
         holder.btnPay.setOnClickListener {
             trip.id?.let {
-                val intent = Intent(holder.itemView.context, CollectPaymentActivity::class.java)
+                val intent = Intent(context, CollectPaymentActivity::class.java)
                 intent.putExtra("rideId", it)
-                holder.itemView.context.startActivity(intent)
+                context.startActivity(intent)
             }
         }
     }

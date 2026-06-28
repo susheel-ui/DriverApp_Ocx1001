@@ -11,7 +11,6 @@ class DriverFirebaseService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         LocalStorage.saveFcmToken(this, token)
-        println("🔥 NEW FCM TOKEN = $token")
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

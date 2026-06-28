@@ -12,8 +12,8 @@ android {
         applicationId = "com.zarkit.zarkit_partner"
         minSdk = 24
         targetSdk = 35
-        versionCode = 8
-        versionName = "1.0.8"
+        versionCode = 9
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,4 +61,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.razorpay:checkout:1.6.33")
     implementation("com.google.zxing:core:3.5.2")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 }

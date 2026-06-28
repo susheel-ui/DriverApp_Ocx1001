@@ -1,6 +1,8 @@
-
 package com.zarkit.zarkit_partner
 
+import android.app.KeyguardManager
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
@@ -11,31 +13,38 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import com.zarkit.zarkit_partner.api.ApiClient
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import androidx.core.view.WindowCompat
 
-class RideRequestPopupActivity : AppCompatActivity() {
+class RideRequestPopupActivity : BaseActivity() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
     private var timer: CountDownTimer? = null
-
     private var acceptInProgress = false
     private var rideId: Long = -1L
+
+    private lateinit var progressBar: ProgressBar
+    private lateinit var tvTimerLabel: TextView
+    private lateinit var btnReject: Button
+    private lateinit var btnAccept: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🔥 Show over lock screen
+        // Show on lock screen
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
             setTurnScreenOn(true)
         }
+
+        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+        keyguardManager.requestDismissKeyguard(this, null)
 
         window.addFlags(
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
@@ -43,38 +52,35 @@ class RideRequestPopupActivity : AppCompatActivity() {
         )
 
         setContentView(R.layout.activity_ride_popup)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // ✅ ADD THIS
-        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        setContentView(R.layout.activity_ride_popup)
-
-
-        // 🔒 Disable back
+        // Disable back button
         onBackPressedDispatcher.addCallback(this) {}
 
         // ================= UI =================
-        val txtFare = findViewById<TextView>(R.id.txtFare)
-        val txtPickup = findViewById<TextView>(R.id.txtPickup)
-        val txtDrop = findViewById<TextView>(R.id.txtDrop)
-        val btnAccept = findViewById<Button>(R.id.btnAccept)
-        val btnReject = findViewById<Button>(R.id.btnReject)
+        val txtFare    = findViewById<TextView>(R.id.txtFare)
+        val txtPickup  = findViewById<TextView>(R.id.txtPickup)
+        val txtDrop    = findViewById<TextView>(R.id.txtDrop)
+        btnAccept      = findViewById(R.id.btnAccept)
+        btnReject      = findViewById(R.id.btnReject)
+        progressBar    = findViewById(R.id.timerProgressBar)
+        tvTimerLabel   = findViewById(R.id.tvTimerLabel)
 
         // ================= DATA =================
         rideId = intent.getLongExtra("rideId", -1L)
         val pickup = intent.getStringExtra("pickup") ?: "Pickup Location"
-        val drop = intent.getStringExtra("drop") ?: "Drop Location"
-        val fare = intent.getStringExtra("fare") ?: "--"
+        val drop   = intent.getStringExtra("drop")   ?: "Drop Location"
+        val fare   = intent.getStringExtra("fare")   ?: "--"
 
-        txtFare.text = "₹$fare"
+        txtFare.text   = "₹$fare"
         txtPickup.text = pickup
-        txtDrop.text = drop
+        txtDrop.text   = drop
 
         // ================= ALERTS =================
         stopAll()
         startSound()
         startVibration()
-        startTimer(btnReject)
+        startAutoRejectTimer()
 
         // ================= ACCEPT =================
         btnAccept.setOnClickListener {
@@ -85,7 +91,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
             if (rideId == -1L) {
                 Toast.makeText(this, "Invalid ride", Toast.LENGTH_SHORT).show()
-                stopAll()
+                dismissAll()
                 finish()
                 return@setOnClickListener
             }
@@ -93,63 +99,61 @@ class RideRequestPopupActivity : AppCompatActivity() {
             val tokenValue = LocalStorage.getToken(this)
             if (tokenValue.isNullOrEmpty()) {
                 Toast.makeText(this, "Session expired", Toast.LENGTH_SHORT).show()
-                stopAll()
+                dismissAll()
                 finish()
                 return@setOnClickListener
             }
 
-            val token = "Bearer $tokenValue"
-
-            ApiClient.api.acceptRide(token, rideId)
+            ApiClient.api.acceptRide("Bearer $tokenValue", rideId)
                 .enqueue(object : Callback<Map<String, Any>> {
 
                     override fun onResponse(
                         call: Call<Map<String, Any>>,
                         response: Response<Map<String, Any>>
                     ) {
-                        stopAll()
+                        dismissAll()
 
                         if (response.isSuccessful) {
 
-                            // Save active ride
-                            LocalStorage.saveActiveRideId(
-                                this@RideRequestPopupActivity,
-                                rideId
-                            )
+                            LocalStorage.saveActiveRideId(this@RideRequestPopupActivity, rideId)
+                            val driverId = LocalStorage.getUserId(this@RideRequestPopupActivity)
 
-                            // Start foreground location service
-                            val locationIntent = Intent(
-                                this@RideRequestPopupActivity,
-                                DriverLocationService::class.java
-                            )
+                            ApiClient.api.driverOffline(
+                                "Bearer $tokenValue",
+                                driverId
+                            ).enqueue(object : Callback<ResponseBody> {
+
+                                override fun onResponse(
+                                    call: Call<ResponseBody>,
+                                    response: Response<ResponseBody>
+                                ) {
+                                }
+
+                                override fun onFailure(
+                                    call: Call<ResponseBody>,
+                                    t: Throwable
+                                ) {
+                                }
+                            })
 
                             ContextCompat.startForegroundService(
                                 this@RideRequestPopupActivity,
-                                locationIntent
+                                Intent(this@RideRequestPopupActivity, DriverLocationService::class.java)
                             )
 
-                            Toast.makeText(
-                                this@RideRequestPopupActivity,
-                                "Ride Accepted",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@RideRequestPopupActivity, "Ride Accepted ✅", Toast.LENGTH_SHORT).show()
 
-                            val intent = Intent(
-                                this@RideRequestPopupActivity,
-                                LiveRideActivity::class.java
+                            startActivity(
+                                Intent(this@RideRequestPopupActivity, LiveRideActivity::class.java).apply {
+                                    putExtra("rideId", rideId)
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
                             )
-                            intent.putExtra("rideId", rideId)
-                            startActivity(intent)
 
                         } else {
                             btnAccept.isEnabled = true
                             acceptInProgress = false
-
-                            Toast.makeText(
-                                this@RideRequestPopupActivity,
-                                "Ride not available",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this@RideRequestPopupActivity, "Ride not available", Toast.LENGTH_SHORT).show()
                         }
 
                         finish()
@@ -158,46 +162,40 @@ class RideRequestPopupActivity : AppCompatActivity() {
                     override fun onFailure(call: Call<Map<String, Any>>, t: Throwable) {
                         btnAccept.isEnabled = true
                         acceptInProgress = false
-
-                        Toast.makeText(
-                            this@RideRequestPopupActivity,
-                            "Network error",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@RideRequestPopupActivity, "Network error", Toast.LENGTH_SHORT).show()
                     }
                 })
         }
 
         // ================= REJECT =================
         btnReject.setOnClickListener {
-            stopAll()
+            dismissAll()
             finish()
         }
     }
 
+    // ================= AUTO REJECT TIMER =================
     private fun startAutoRejectTimer() {
         val TOTAL_SECONDS = 30
-        val progressBar = findViewById<ProgressBar>(R.id.timerProgressBar)
-        val tvTimerLabel = findViewById<TextView>(R.id.tvTimerLabel)
-        val btnReject    = findViewById<Button>(R.id.btnReject)
 
         progressBar.max      = TOTAL_SECONDS
         progressBar.progress = TOTAL_SECONDS
 
-        object : CountDownTimer(TOTAL_SECONDS * 1000L, 1000L) {
+        timer?.cancel()
+        timer = object : CountDownTimer(TOTAL_SECONDS * 1000L, 1000L) {
 
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft = (millisUntilFinished / 1000).toInt()
                 progressBar.progress = secondsLeft
                 tvTimerLabel.text    = "ऑटो रिजेक्ट टाइमर: $secondsLeft सेकेंड"
-                btnReject.text       = "REJECT\n(${secondsLeft}S)"
+                btnReject.text       = "REJECT (${secondsLeft}s)"
             }
 
             override fun onFinish() {
                 progressBar.progress = 0
                 tvTimerLabel.text    = "ऑटो रिजेक्ट टाइमर: 0 सेकेंड"
-                // Auto reject
-                btnReject.performClick()
+                dismissAll()
+                finish()
             }
 
         }.start()
@@ -215,9 +213,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
             )
             setDataSource(
                 this@RideRequestPopupActivity,
-                android.net.Uri.parse(
-                    "android.resource://${packageName}/${R.raw.ride_request_tone}"
-                )
+                android.net.Uri.parse("android.resource://${packageName}/${R.raw.ride_request_tone}")
             )
             isLooping = true
             prepare()
@@ -232,31 +228,22 @@ class RideRequestPopupActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             vibrator?.vibrate(
-                VibrationEffect.createWaveform(
-                    longArrayOf(0, 800, 800),
-                    0
-                )
+                VibrationEffect.createWaveform(longArrayOf(0, 800, 800), 0)
             )
         } else {
+            @Suppress("DEPRECATION")
             vibrator?.vibrate(longArrayOf(0, 800, 800), 0)
         }
     }
 
-    // ================= TIMER =================
-    private fun startTimer(btnReject: Button) {
-        timer?.cancel()
-        timer = object : CountDownTimer(30_000, 1000) {
-
-            override fun onTick(ms: Long) {
-                btnReject.text = "REJECT (${ms / 1000}s)"
-            }
-
-            override fun onFinish() {
-                stopAll()
-                finish()
-            }
-
-        }.start()
+    // ================= DISMISS ALL =================
+    private fun dismissAll() {
+        stopAll()
+        val nm = getSystemService(NotificationManager::class.java)
+        nm.cancel(RideForegroundService.NOTIFICATION_ID)
+        nm.cancel(RideForegroundService.FOREGROUND_ID)
+        nm.cancelAll()
+        stopService(Intent(this, RideForegroundService::class.java))
     }
 
     // ================= STOP ALL =================
@@ -264,7 +251,7 @@ class RideRequestPopupActivity : AppCompatActivity() {
         timer?.cancel()
         timer = null
 
-        mediaPlayer?.stop()
+        try { mediaPlayer?.stop() } catch (_: Exception) {}
         mediaPlayer?.release()
         mediaPlayer = null
 

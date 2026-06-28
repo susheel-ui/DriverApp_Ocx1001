@@ -16,8 +16,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.net.URL
 import android.util.Log
+import android.os.CountDownTimer
+import java.util.Locale
 
-class QrPaymentActivity : AppCompatActivity() {
+class QrPaymentActivity : BaseActivity() {
 
     private val TAG = "QrPaymentActivity"
 
@@ -27,6 +29,8 @@ class QrPaymentActivity : AppCompatActivity() {
     private var transactionId: Long = 0L
     private var amount: Long = 0L
     private var rideId: Long = 0L
+    private val paymentTimeout = 3 * 60 * 1000L // 3 minutes
+    private var countDownTimer: CountDownTimer? = null
 
     private val handler = Handler(Looper.getMainLooper())
     private val pollDelay = 5000L
@@ -137,6 +141,30 @@ class QrPaymentActivity : AppCompatActivity() {
     private fun startPolling() {
         Log.d(TAG, "startPolling: polling started for transactionId=$transactionId")
         isPolling = true
+
+        countDownTimer?.cancel()
+        countDownTimer = object : CountDownTimer(paymentTimeout, 1000) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                val minutes = (millisUntilFinished / 1000) / 60
+                val seconds = (millisUntilFinished / 1000) % 60
+
+                binding.tvTimer.text = String.format(
+                    Locale.getDefault(),
+                    "Time Left: %02d:%02d",
+                    minutes,
+                    seconds
+                )
+            }
+
+            override fun onFinish() {
+                stopPolling()
+                LocalStorage.clearActiveRideId(this@QrPaymentActivity)
+                toast("Payment timeout")
+                goToDashboard()
+            }
+        }.start()
+
         scheduleNextPoll()
     }
 
@@ -144,6 +172,9 @@ class QrPaymentActivity : AppCompatActivity() {
         Log.d(TAG, "stopPolling: stopping polling")
         isPolling = false
         handler.removeCallbacks(pollRunnable)
+
+        countDownTimer?.cancel()
+        countDownTimer = null
     }
 
     private fun scheduleNextPoll() {
@@ -173,38 +204,60 @@ class QrPaymentActivity : AppCompatActivity() {
 
                         when (status) {
                             "SUCCESS" -> {
-                                Log.d(TAG, "checkPaymentStatus: SUCCESS — stopping polling and redirecting")
                                 stopPolling()
+                                // clearActiveRideId dialog ke btnOk click pe hoga — yahan se hatao
+                                runOnUiThread {
+                                    showPaymentSuccessDialog()
+                                }
                                 toast("Payment Received")
-                                LocalStorage.clearActiveRideId(this@QrPaymentActivity)
-                                goToDashboard()
                             }
 
                             "FAILED" -> {
-                                Log.e(TAG, "checkPaymentStatus: FAILED — stopping polling")
                                 stopPolling()
                                 toast("Payment Failed")
                             }
 
                             else -> {
-                                Log.d(TAG, "checkPaymentStatus: status=$status (pending) — scheduling next poll")
                                 scheduleNextPoll()
                             }
                         }
                     } else {
-                        Log.w(TAG, "checkPaymentStatus: unsuccessful response — code=${response.code()}, retrying")
                         scheduleNextPoll()
                     }
                 }
 
                 override fun onFailure(call: Call<PaymentStatusResponse>, t: Throwable) {
-                    Log.e(TAG, "checkPaymentStatus: network failure — ${t.message}, retrying", t)
                     scheduleNextPoll()
                 }
             })
     }
 
     // ================= HELPERS =================
+
+    private fun showPaymentSuccessDialog() {
+        if (isFinishing || isDestroyed) {
+            goToDashboard()
+            return
+        }
+
+        try {
+            val dialog = androidx.appcompat.app.AlertDialog.Builder(this)
+                .setCancelable(false)
+                .create()
+
+            val view = layoutInflater.inflate(R.layout.dialog_payment_success, null)
+            dialog.setView(view)
+            dialog.show()
+
+            view.findViewById<android.widget.Button>(R.id.btnOk).setOnClickListener {
+                dialog.dismiss()
+                LocalStorage.clearActiveRideId(this)
+                goToDashboard()
+            }
+        } catch (e: Exception) {
+            goToDashboard() // fallback
+        }
+    }
 
     private fun goToDashboard() {
         Log.d(TAG, "goToDashboard: navigating to DashboardActivity")

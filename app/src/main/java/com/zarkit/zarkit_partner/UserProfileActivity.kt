@@ -18,7 +18,7 @@ import retrofit2.Response
 import java.text.NumberFormat
 import java.util.*
 
-class UserProfileActivity : AppCompatActivity() {
+class UserProfileActivity : BaseActivity() {
 
     private lateinit var txtName: TextView
     private lateinit var txtEmail: TextView
@@ -103,6 +103,7 @@ class UserProfileActivity : AppCompatActivity() {
                         totalEarningAmount = data.earning
                         val formatter = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
                         txtTotalEarning.text = formatter.format(totalEarningAmount)
+                        android.util.Log.d("PROFILE", "Earning = ${data.earning}")
                     } else {
                         Toast.makeText(this@UserProfileActivity, "Failed to load data", Toast.LENGTH_SHORT).show()
                     }

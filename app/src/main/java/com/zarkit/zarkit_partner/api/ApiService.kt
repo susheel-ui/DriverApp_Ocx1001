@@ -1,5 +1,6 @@
 package com.zarkit.zarkit_partner.api
 
+import com.zarkit.zarkit_partner.api.Entites.EndRideRequest
 import com.zarkit.zarkit_partner.api.Entites.body
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -220,5 +221,29 @@ interface ApiService {
         @Body body: LoginBody
     ): Call<ResponseBody>
 
+    @POST("driver/ride/{rideId}/end")
+    fun endTrip(
+        @Header("Authorization") token: String,
+        @Path("rideId") rideId: Long,
+        @Body request: EndRideRequest
+    ): Call<Map<String, Any>>
+
+    @POST("api/ride/call-sender")
+    fun callSender(
+        @Header("Authorization") auth: String,
+        @Body request: CallRideRequest
+    ): Call<ResponseBody>
+
+    @POST("api/ride/call-receiver")
+    fun callReceiver(
+        @Header("Authorization") auth: String,
+        @Body request: CallRideRequest
+    ): Call<ResponseBody>
+
+    @GET("driver/active-status/{driverId}")
+    fun getDriverActiveStatus(
+        @Header("Authorization") token: String,
+        @Path("driverId") driverId: Long
+    ): Call<DriverActiveStatusResponse>
 
 }

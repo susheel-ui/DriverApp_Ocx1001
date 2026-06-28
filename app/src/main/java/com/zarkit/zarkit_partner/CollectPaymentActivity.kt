@@ -2,6 +2,7 @@ package com.zarkit.zarkit_partner
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
@@ -17,7 +18,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CollectPaymentActivity : AppCompatActivity() {
+class CollectPaymentActivity : BaseActivity() {
 
     private var driverId: Long = -1L
     private lateinit var authHeader: String
@@ -139,7 +140,7 @@ class CollectPaymentActivity : AppCompatActivity() {
     // ================= ONLINE PAYMENT API =================
 
     private fun callOnlineCollectApi() {
-
+        Log.e("TEST_API", "callOnlineCollectApi CALLED")
         if (isSubmitting) return
         isSubmitting = true
 
@@ -147,13 +148,10 @@ class CollectPaymentActivity : AppCompatActivity() {
 
         ApiClient.api.collectOnlinePayment(authHeader, request)
             .enqueue(object : Callback<Void> {
-
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
-
+                    Log.e("TEST_API", "Response = ${response.code()}")
                     isSubmitting = false
-
                     if (response.code() == 200) {
-
                         val intent = Intent(
                             this@CollectPaymentActivity,
                             DashboardActivity::class.java
@@ -161,16 +159,15 @@ class CollectPaymentActivity : AppCompatActivity() {
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
                                 Intent.FLAG_ACTIVITY_NEW_TASK or
                                 Intent.FLAG_ACTIVITY_CLEAR_TASK
-
                         startActivity(intent)
                         finish()
-
                     } else {
                         toast("Error ${response.code()}")
                     }
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
+                    Log.e("TEST_API", "Failure = ${t.message}")
                     isSubmitting = false
                     toast("Network error: ${t.message}")
                 }
@@ -188,16 +185,13 @@ class CollectPaymentActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful && response.body() != null) {
                         amount = response.body()!!.finalFare
-
                         val totalAmount = amount.toDouble()
-                        val gstAmount = totalAmount * 0.18
-                        val rideFare = totalAmount - gstAmount
-
+                        val rideFare = totalAmount / 1.18
+                        val gstAmount = totalAmount - rideFare
                         txtFare.text = "Collect ₹${String.format("%.2f", totalAmount)}"
                         txtRideFare.text = "₹${String.format("%.2f", rideFare)}"
                         txtTaxes.text = "₹${String.format("%.2f", gstAmount)}"
                         txtTotal.text = "₹${String.format("%.2f", totalAmount)}"
-
                         btnQr.isEnabled = true
                         dragCash.visibility = View.VISIBLE
                         sliderCash.isEnabled = true
@@ -205,7 +199,6 @@ class CollectPaymentActivity : AppCompatActivity() {
                         toast("Failed to fetch fare")
                     }
                 }
-
                 override fun onFailure(call: Call<FareResponse>, t: Throwable) {
                     toast("Network error")
                 }

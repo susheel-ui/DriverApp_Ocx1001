@@ -20,6 +20,22 @@
             android:src="@drawable/zarkit_yellowbg" />
     </com.google.android.material.card.MaterialCardView>
 
+    <TextView
+        android:id="@+id/tvTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Time Left: 03:00"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Use Razorpay UPI" />
+
     <!-- FrameLayout to hold QR Image and loader -->
     <FrameLayout
         android:layout_width="match_parent"
@@ -43,11 +59,5 @@
             android:visibility="gone" />
 
     </FrameLayout>
-
-    <TextView
-        android:text="Use Razorpay UPI"
-        android:layout_marginTop="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 </LinearLayout>

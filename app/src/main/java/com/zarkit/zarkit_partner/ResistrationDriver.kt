@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.zarkit.zarkit_partner.databinding.ActivityResistrationDriverBinding
 import okhttp3.*
@@ -14,7 +15,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 
-class ResistrationDriver : AppCompatActivity() {
+class ResistrationDriver : BaseActivity() {
 
     private lateinit var binding: ActivityResistrationDriverBinding
     private val client = OkHttpClient()
@@ -22,6 +23,7 @@ class ResistrationDriver : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         binding = ActivityResistrationDriverBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

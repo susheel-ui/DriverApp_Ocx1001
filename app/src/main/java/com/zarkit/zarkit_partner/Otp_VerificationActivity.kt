@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.zarkit.zarkit_partner.api.ApiClient
 import com.zarkit.zarkit_partner.api.SaveTokenBody
@@ -18,13 +19,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Otp_VerificationActivity : AppCompatActivity() {
+class Otp_VerificationActivity : BaseActivity() {
 
     private lateinit var binding: ActivityOtpVerificationBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         binding = ActivityOtpVerificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -66,7 +68,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
     }
 
     private fun verifyOtp(phone: String, otp: String) {
-
+        binding.verifyButton.isEnabled = false
         val body = VerifyOtpBody(phone, otp)
 
         ApiClient.api.verifyOtp(body).enqueue(object : Callback<ResponseBody> {
@@ -74,6 +76,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
                 if (!response.isSuccessful) {
+                    binding.verifyButton.isEnabled = true
                     Toast.makeText(
                         this@Otp_VerificationActivity,
                         "Invalid OTP",
@@ -94,6 +97,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
                 if (code == "LOGIN_SUCCESS") {
 
                     if (role != "DRIVER") {
+                        binding.verifyButton.isEnabled = true
                         Toast.makeText(
                             this@Otp_VerificationActivity,
                             "Only drivers are allowed to login",
@@ -133,6 +137,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
                     saveFcmTokenToServer(userId)
 
                 } else {
+                    binding.verifyButton.isEnabled = true
                     Toast.makeText(
                         this@Otp_VerificationActivity,
                         "OTP Invalid",
@@ -142,6 +147,7 @@ class Otp_VerificationActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                binding.verifyButton.isEnabled = true
                 Toast.makeText(
                     this@Otp_VerificationActivity,
                     "Network Error: ${t.message}",

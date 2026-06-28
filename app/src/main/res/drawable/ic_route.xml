@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Vertical line connecting dots -->
+    <path
+        android:pathData="M12,7 L12,17"
+        android:strokeColor="#616161"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:fillColor="@android:color/transparent"/>
+
+    <!-- Top circle (pickup) -->
+    <path
+        android:pathData="M12,5 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0"
+        android:fillColor="#1D9E75"/>
+
+    <!-- Bottom square (drop) -->
+    <path
+        android:pathData="M10,17 L14,17 L14,21 L10,21 Z"
+        android:fillColor="#D85A30"/>
+
+</vector>

@@ -62,8 +62,6 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/zarkit_groupnobg" />
 
-
-
             <!-- Support Message -->
             <TextView
                 android:layout_width="wrap_content"
@@ -84,6 +82,29 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/color_primary"/>
+
+            <!-- Phone Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"
+                android:text="For any assistance, please feel free to contact us. \n किसी भी सहायता के लिए कृपया हमसे संपर्क करें।"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:gravity="center"/>
+
+            <!-- Phone Number -->
+            <TextView
+                android:id="@+id/tvPhoneNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_gravity="center_horizontal"
+                android:text="+91 6307821006"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
 
             <!-- ================= COMMON QUESTIONS ================= -->
             <TextView

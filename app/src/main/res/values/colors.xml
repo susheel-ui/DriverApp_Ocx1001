@@ -8,4 +8,17 @@
     <color name="green">#2E7D32</color>
     <color name="red">#D84315</color>
     <color name="gray">#929292</color>
+    <color name="surface_secondary">#F5F5F5</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="divider">#E0E0E0</color>
+    <color name="green_700">#2E7D32</color>
+    <color name="red_600">#E53935</color>
+    <color name="amber_600">#FB8C00</color>
+    <color name="surface_tertiary">#F5F7FA</color>
+    <color name="wallet_dark">#1A1A2E</color>
+    <color name="green_800">#27500A</color>
+    <color name="amber_50">#FAEEDA</color>
+    <color name="amber_400">#EF9F27</color>
+    <color name="amber_800">#854F0B</color>
 </resources>

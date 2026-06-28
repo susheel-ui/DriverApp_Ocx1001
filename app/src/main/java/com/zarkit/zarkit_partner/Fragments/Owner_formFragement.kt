@@ -1,6 +1,8 @@
 package com.zarkit.zarkit_partner.Fragments
 
 import android.Manifest
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -10,9 +12,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.zarkit.zarkit_partner.LocalStorage
 import com.zarkit.zarkit_partner.R
 import com.zarkit.zarkit_partner.api.ApiClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -20,6 +26,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class Owner_formFragement : Fragment() {
@@ -112,7 +119,8 @@ class Owner_formFragement : Fragment() {
 
     private fun openCamera(type: String) {
 
-        val file = File(requireContext().cacheDir, "$type.jpg")
+        // Unique filename — conflict nahi hoga
+        val file = File(requireContext().cacheDir, "${type}_${System.currentTimeMillis()}.jpg")
 
         val uri = FileProvider.getUriForFile(
             requireContext(),
@@ -165,47 +173,85 @@ class Owner_formFragement : Fragment() {
         isSubmitting = true
         showLoader()
 
-        val photo1 = createPart("photo1", aadhaarUri!!)
-        val photo2 = createPart("photo2", aadhaarBackUri!!)
-        val photo3 = createPart("photo3", panUri!!)
-        val photo4 = createPart("photo4", driverPhotoUri!!)
+        // Background thread pe compress karo — 4 photos parallel
+        lifecycleScope.launch(Dispatchers.IO) {
 
-        ApiClient.api.registerDriver(
-            authHeader = "Bearer $jwt",
-            name = name,
-            photo1 = photo1,
-            photo2 = photo2,
-            photo3 = photo3,
-            photo4 = photo4
-        ).enqueue(object : Callback<ResponseBody> {
-
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                isSubmitting = false
-                hideLoader()
-
-                if (response.isSuccessful) {
-                    toast("Driver details saved")
-                    onSuccess()
-                } else {
-                    toast("Server error: ${response.code()}")
+            val parts = try {
+                listOf(
+                    createCompressedPart("photo1", aadhaarUri!!),
+                    createCompressedPart("photo2", aadhaarBackUri!!),
+                    createCompressedPart("photo3", panUri!!),
+                    createCompressedPart("photo4", driverPhotoUri!!)
+                )
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    isSubmitting = false
+                    hideLoader()
+                    toast("Image processing failed")
                 }
+                return@launch
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                isSubmitting = false
-                hideLoader()
-                toast("Network error")
+            withContext(Dispatchers.Main) {
+                if (!isAdded) return@withContext
+
+                ApiClient.api.registerDriver(
+                    authHeader = "Bearer $jwt",
+                    name = name,
+                    photo1 = parts[0],
+                    photo2 = parts[1],
+                    photo3 = parts[2],
+                    photo4 = parts[3]
+                ).enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        isSubmitting = false
+                        hideLoader()
+                        if (!isAdded) return
+
+                        if (response.isSuccessful) {
+                            toast("Driver details saved")
+                            onSuccess()
+                        } else {
+                            toast("Server error: ${response.code()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        isSubmitting = false
+                        hideLoader()
+                        if (!isAdded) return
+                        toast("Network error")
+                    }
+                })
             }
-        })
+        }
     }
 
     // ================= FILE PART =================
-    private fun createPart(key: String, uri: Uri): MultipartBody.Part {
+    private fun createCompressedPart(key: String, uri: Uri): MultipartBody.Part {
 
-        val body = requireContext().contentResolver.openInputStream(uri)?.use {
-            it.readBytes().toRequestBody("image/jpeg".toMediaType())
-        } ?: throw IllegalStateException("Cannot read file")
+        val inputStream = requireContext().contentResolver.openInputStream(uri)!!
+        val original = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
 
+        // Max 800px width, aspect ratio maintain
+        val maxWidth = 800
+        val ratio = maxWidth.toFloat() / original.width
+        val newHeight = (original.height * ratio).toInt()
+
+        val resized = Bitmap.createScaledBitmap(original, maxWidth, newHeight, true)
+        original.recycle()
+
+        // JPEG 75% quality
+        val baos = ByteArrayOutputStream()
+        resized.compress(Bitmap.CompressFormat.JPEG, 75, baos)
+        resized.recycle()
+
+        val body = baos.toByteArray().toRequestBody("image/jpeg".toMediaType())
         return MultipartBody.Part.createFormData(key, "$key.jpg", body)
     }
 
@@ -222,4 +268,3 @@ class Owner_formFragement : Fragment() {
             Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }
-

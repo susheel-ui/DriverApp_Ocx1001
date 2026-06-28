@@ -16,7 +16,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class WithdrawRequestsActivity : AppCompatActivity() {
+class WithdrawRequestsActivity : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: WithdrawRequestsAdapter

@@ -48,17 +48,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <!-- TRIP ID -->
-        <TextView
-            android:id="@+id/txtTripId"
-            android:text="Trip ID: #NY-98231 • Completed"
-            android:textSize="14sp"
-            android:textColor="#6B7280"
-            android:gravity="center"
-            android:layout_marginBottom="32dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
         <!-- PAYMENT BREAKDOWN CARD -->
         <LinearLayout
             android:orientation="vertical"
@@ -72,6 +61,7 @@
                 android:text="PAYMENT BREAKDOWN"
                 android:textStyle="bold"
                 android:textSize="14sp"
+
                 android:layout_marginBottom="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

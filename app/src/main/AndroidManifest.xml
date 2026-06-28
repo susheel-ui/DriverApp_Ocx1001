@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!-- 🔔 Notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -16,6 +17,8 @@
     <!-- 🔊 Wake + vibration -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
 
     <!-- 🔥 Foreground services -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -59,7 +62,7 @@
         <service
             android:name=".RideForegroundService"
             android:exported="false"
-            android:foregroundServiceType="phoneCall" />
+            android:foregroundServiceType="specialUse" />
 
         <service
             android:name=".DriverLocationService"
@@ -99,13 +102,14 @@
         <activity
             android:name=".LiveRideActivity"
             android:exported="false"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- Other screens -->
-        <activity android:name=".LoginActivity" android:exported="true" />
+        <activity android:name=".LoginActivity" android:exported="true" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".RegistrationActivity" android:exported="true" />
-        <activity android:name=".ResistrationDriver" android:exported="true" />
-        <activity android:name=".Otp_VerificationActivity" android:exported="false" />
+        <activity android:name=".ResistrationDriver" android:exported="true" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Otp_VerificationActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".DashboardActivity" android:exported="true" />
         <activity android:name=".AllTripsActivity" android:exported="true" />
         <activity android:name=".CollectPaymentActivity" android:exported="true" />

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Icon -->
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="🔐"
+        android:textSize="28sp"
+        android:background="@drawable/circle_light_bg" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="End Delivery OTP"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:gravity="center" />
+
+    <!-- Info Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:layout_marginTop="18dp"
+        android:background="@drawable/otp_bg">
+
+        <TextView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:text="ℹ"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#1565C0" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:text="Please enter the OTP shared by the customer to complete this delivery.\n\nइस डिलीवरी को पूरा करने के लिए ग्राहक द्वारा साझा किया गया OTP दर्ज करें।"
+            android:textColor="#444444"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <!-- OTP Label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delivery OTP"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:textSize="14sp"
+        android:layout_marginTop="20dp" />
+
+    <!-- OTP Input -->
+    <EditText
+        android:id="@+id/edtEndTripOtp"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/otp_bg"
+        android:gravity="center"
+        android:hint="Enter 4 Digit OTP"
+        android:inputType="number"
+        android:maxLength="6"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <!-- Error -->
+    <TextView
+        android:id="@+id/txtOtpError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❌ Incorrect OTP"
+        android:textColor="#D32F2F"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="10dp" />
+
+    <!-- Verify Button -->
+    <Button
+        android:id="@+id/btnVerifyEndTripOtp"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="22dp"
+        android:text="Verify &amp; Complete Delivery"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#2E7D32" />
+
+</LinearLayout>

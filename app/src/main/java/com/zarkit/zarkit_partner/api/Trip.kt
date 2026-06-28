@@ -6,5 +6,8 @@ data class Trip(
     val dropAddress: String?,
     val finalFare: Double?,
     val distanceText: String?,
-    val paymentStatus: String?
+    val paymentStatus: String?,
+    val status: String?,
+    val createdAt: String?,
+    val driverRideEarning: Double? = 0.0
 )

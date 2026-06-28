@@ -137,5 +137,40 @@ object LocalStorage {
             .edit().remove(KEY_ACTIVE_RIDE_ID).apply()
     }
 
+    // -------------------------
+// REGISTRATION STEP
+// -------------------------
+    private const val KEY_REG_STEP = "registration_step"
+
+    fun saveRegistrationStep(context: Context, step: Int) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().putInt(KEY_REG_STEP, step).apply()
+    }
+
+    fun getRegistrationStep(context: Context): Int {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getInt(KEY_REG_STEP, 0)
+    }
+
+    fun clearRegistrationStep(context: Context) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit().remove(KEY_REG_STEP).apply()
+    }
+
+    // -------------------------
+// 🔥 CLEAR ALL (LOGOUT)
+// -------------------------
+    fun clearAll(context: Context) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
+
+        context.getSharedPreferences(AUTH_PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
+    }
+
 
 }

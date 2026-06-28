@@ -44,32 +44,230 @@
         android:id="@+id/txtRideInfo"
         android:textSize="18sp"
         android:padding="16dp"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- 📞 CALL USER -->
+    <!-- 📞 ALL CALL SECTIONS -->
+    <LinearLayout
+        android:id="@+id/callSection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-    <!-- NAVIGATION & TRIP FLOW -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#FFFFFF">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
-    <ImageButton
-        android:id="@+id/btnCallUser"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_margin="16dp"
-        android:background="@drawable/bg_call_circle_ripple"
-        android:clickable="true"
-        android:contentDescription="Call User"
-        android:elevation="6dp"
-        android:focusable="true"
-        android:padding="16dp"
-        android:scaleType="center"
-        android:src="@drawable/ic_call_white_24"
+            <!-- Phone icon dot -->
+            <View
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/ic_pickup_marker"
+                android:layout_marginEnd="10dp"/>
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <!-- Label -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Call Booking Person"
+                    android:textSize="12sp"
+                    android:textColor="#888888"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="जिसने बुकिंग की है उसे कॉल करें"
+                    android:textSize="18sp"
+                    android:textColor="#222222"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(यदि कोई कनेक्शन न मिले तभी कॉल करें)"
+                    android:textSize="13sp"
+                    android:textColor="#222222"/>
+
+            </LinearLayout>
+
+            <!-- Call Button -->
+
+            <ImageButton
+                android:id="@+id/btnCallUser"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_call_circle_ripple"
+                android:clickable="true"
+                android:contentDescription="Call User"
+                android:elevation="6dp"
+                android:focusable="true"
+                android:padding="10dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_call_white_24"
+                android:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/txtCallUserTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="10sp"
+                android:textColor="#FF0000"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 📦 PICKUP & DROP CALL SECTION -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#FFFFFF">
+
+        <!-- PICKUP CALL ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <!-- Green dot -->
+            <View
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/ic_pickup_marker"
+                android:layout_marginEnd="10dp"/>
+
+            <!-- Pickup Label -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Call Pickup Location Person"
+                    android:textSize="12sp"
+                    android:textColor="#888888"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="जहाँ से सामान उठाना है उस व्यक्ति को कॉल करेंं"
+                    android:textSize="13sp"
+                    android:textColor="#222222"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+            <!-- Call Button -->
+            <Button
+                android:id="@+id/btnCallPickupPerson"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="📞 Call"
+                android:textAllCaps="false"
+                android:textColor="#2E7D32"
+                android:backgroundTint="#E8F5E9"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+        </LinearLayout>
+
+        <!-- DIVIDER -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#EEEEEE"
+            android:layout_marginStart="22dp"/>
+
+        <!-- DROP CALL ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+            <!-- Red dot -->
+            <View
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/ic_drop_marker"
+                android:layout_marginEnd="10dp"/>
+
+            <!-- Drop Label -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Call Drop Location Person"
+                    android:textSize="12sp"
+                    android:textColor="#888888"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="जहाँ सामान पहुँचाना है उस व्यक्ति को कॉल करेंं"
+                    android:textSize="13sp"
+                    android:textColor="#222222"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+            <!-- Call Button -->
+            <Button
+                android:id="@+id/btnCallDropPerson"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="📞 Call"
+                android:textAllCaps="false"
+                android:textColor="#C62828"
+                android:backgroundTint="#FFEBEE"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:textStyle="bold"
+                android:textSize="13sp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnNavigatePickup"

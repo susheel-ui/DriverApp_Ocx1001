@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.zarkit.zarkit_partner.api.ApiClient
 import com.zarkit.zarkit_partner.api.LoginBody
@@ -24,14 +25,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
 
     private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { v, insets ->
@@ -139,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
 
     // ✅ Login API using Retrofit
     private fun callLoginApi(phone: String) {
-
+        binding.buttonLogin.isEnabled = false
         val body = LoginBody(phone)
 
         ApiClient.api.login(body).enqueue(object : Callback<ResponseBody> {
@@ -148,7 +149,7 @@ class LoginActivity : AppCompatActivity() {
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
-
+                binding.buttonLogin.isEnabled = true
                 try {
 
                     // ✅ Read success OR error body
@@ -197,6 +198,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                binding.buttonLogin.isEnabled = true
                 Toast.makeText(
                     this@LoginActivity,
                     "Network Error: ${t.message}",

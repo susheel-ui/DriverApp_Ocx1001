@@ -76,6 +76,8 @@ object DrawerMenuHelper {
         }
 
         // ================= LOGOUT =================
+        menuLogout.isClickable = true
+        menuLogout.isFocusable = true
         menuLogout.setOnClickListener {
             drawerLayout.closeDrawers()
             onLogout()

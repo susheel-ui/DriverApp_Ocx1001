@@ -1,4 +1,4 @@
-package com.zarkit.zarkit_partner
+﻿package com.zarkit.zarkit_partner
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.zarkit.zarkit_partner.api.ApiClient
 import com.zarkit.zarkit_partner.api.DriverEarningResponse
 import com.zarkit.zarkit_partner.api.DriverVehicleInfoResponse
@@ -21,11 +22,12 @@ import java.util.Locale
 import kotlin.math.abs
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultWithDataListener
+import com.zarkit.zarkit_partner.api.DriverActiveStatusResponse
 import com.zarkit.zarkit_partner.api.RazorpayVerifyRequest
 import org.json.JSONObject
 
-class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
-
+class DashboardActivity : BaseActivity(),PaymentResultWithDataListener {
+    private lateinit var analytics: FirebaseAnalytics
     private var isOnline = false
     private var blockGoOnline = false
 
@@ -38,13 +40,15 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
     private lateinit var btnPayNow: Button
     private lateinit var btnMenu: ImageView
 
-
+    private lateinit var productiveDayCard: LinearLayout
+    private lateinit var verificationBanner: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
-
+        analytics = FirebaseAnalytics.getInstance(this)
+        analytics.logEvent("driver_dashboard_opened", null)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.mainContent)) { view, insets ->
 
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -64,12 +68,12 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
         drawerMenu = findViewById(R.id.drawerMenu)
         statusDot = findViewById(R.id.statusDot)
         btnMenu = findViewById(R.id.btnMenu)
-
+        productiveDayCard = findViewById(R.id.productiveDayCard)
         txtEarning = findViewById(R.id.txtEarning)
         txtDriverName = findViewById(R.id.txtDriverName)
         txtVehicleInfo = findViewById(R.id.txtVehicleInfo)
         btnPayNow = findViewById(R.id.btnPayNow)
-
+        verificationBanner = findViewById(R.id.verificationBanner)
         btnPayNow.visibility = View.GONE
 
         val btnProfile = findViewById<ImageView>(R.id.btnProfile)
@@ -88,6 +92,12 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
         val drawerMenu: LinearLayout = findViewById(R.id.drawerMenu)
         val menuWithdrawRequests: TextView = drawerMenu.findViewById(R.id.menuWithdrawRequests)
 
+        fetchDriverActiveStatus(
+            sliderCircle,
+            goOnlineLayout,
+            txtOnlineStatus
+        )
+
 
         menuWithdrawRequests.setOnClickListener {
             // Open the Withdraw Requests Activity
@@ -103,15 +113,15 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
         // ================= SLIDER =================
         setupSlider(sliderCircle, goOnlineLayout, txtOnlineStatus)
 
-        isOnline = LocalStorage.getDriverOnlineStatus(this)
-
-        sliderCircle.post {
-            if (isOnline) {
-                moveSliderOnline(sliderCircle, goOnlineLayout, txtOnlineStatus)
-            } else {
-                moveSliderOffline(sliderCircle, goOnlineLayout, txtOnlineStatus)
-            }
-        }
+//        isOnline = LocalStorage.getDriverOnlineStatus(this)
+//
+//        sliderCircle.post {
+//            if (isOnline) {
+//                moveSliderOnline(sliderCircle, goOnlineLayout, txtOnlineStatus)
+//            } else {
+//                moveSliderOffline(sliderCircle, goOnlineLayout, txtOnlineStatus)
+//            }
+//        }
 
         // ================= PAY BUTTON (EARNING) =================
         btnPayNow.setOnClickListener {
@@ -132,6 +142,67 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
         fetchDriverEarning()
         fetchDriverVehicleInfo()
     }
+
+
+    private fun fetchDriverActiveStatus(
+        sliderCircle: FrameLayout,
+        goOnlineLayout: RelativeLayout,
+        txtOnlineStatus: TextView
+    ) {
+
+        val token = LocalStorage.getToken(this) ?: return
+        val driverId = LocalStorage.getUserId(this)
+
+        ApiClient.api.getDriverActiveStatus(
+            "Bearer $token",
+            driverId
+        ).enqueue(object : retrofit2.Callback<DriverActiveStatusResponse> {
+
+            override fun onResponse(
+                call: retrofit2.Call<DriverActiveStatusResponse>,
+                response: retrofit2.Response<DriverActiveStatusResponse>
+            ) {
+
+                if (!response.isSuccessful || response.body() == null) {
+                    return
+                }
+
+                val isActive = response.body()!!.isActive
+
+                this@DashboardActivity.isOnline = isActive
+                LocalStorage.saveDriverOnlineStatus(
+                    this@DashboardActivity,
+                    isActive
+                )
+
+                sliderCircle.post {
+
+                    if (isActive) {
+                        moveSliderOnline(
+                            sliderCircle,
+                            goOnlineLayout,
+                            txtOnlineStatus
+                        )
+                    } else {
+                        moveSliderOffline(
+                            sliderCircle,
+                            goOnlineLayout,
+                            txtOnlineStatus
+                        )
+                    }
+                }
+            }
+
+            override fun onFailure(
+                call: retrofit2.Call<DriverActiveStatusResponse>,
+                t: Throwable
+            ) {
+                Log.e("ACTIVE_STATUS", t.message ?: "Error")
+            }
+        })
+    }
+
+
 
     private fun createOrderAndStartPayment(amount: Double) {
 
@@ -252,6 +323,7 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
                         DriverStatusHelper.goOnline(this)
 
                         Toast.makeText(this, "You are ONLINE", Toast.LENGTH_SHORT).show()
+                        analytics.logEvent("driver_online", null)
 
                     } else {
 
@@ -261,6 +333,7 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
                         DriverStatusHelper.goOffline(this)
 
                         Toast.makeText(this, "You are OFFLINE", Toast.LENGTH_SHORT).show()
+                        analytics.logEvent("driver_offline", null)
                     }
 
                     true
@@ -333,6 +406,8 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
         if (isBlocked) {
             btnPayNow.visibility = View.GONE
             blockGoOnline = true
+            verificationBanner.visibility = View.VISIBLE
+            productiveDayCard.visibility = View.GONE
             showPopup(
                 "Admin Verification Pending",
                 "First admin must verify your documents. Then you can pay ₹500 registration fees to start working."
@@ -340,18 +415,50 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
             return
         }
 
-        // Show Pay button if ANY negative amount
+        verificationBanner.visibility = View.GONE
+        productiveDayCard.visibility = View.VISIBLE
+
         if (earning < 0) {
             btnPayNow.visibility = View.VISIBLE
+
+            if (earning == -500.0) {
+                // Exactly -500 → Registration fees popup
+                blockGoOnline = true
+                showPopup(
+                    "🎉 Admin Approved! | स्वीकृति मिल गई",
+                    "Congratulations! Your documents have been approved by the admin. Please pay ₹500 as registration fees to start working.\n\nबधाई हो! Admin ने आपके दस्तावेज़ स्वीकृत कर दिए हैं। काम शुरू करने के लिए कृपया ₹500 पंजीकरण शुल्क का भुगतान करें।\n\n📧 support@zarkit.com"
+                )
+            } else if (earning < -500) {
+                // Below -500 → Force offline + Blocked
+                blockGoOnline = true
+                isOnline = false
+                LocalStorage.saveDriverOnlineStatus(this, false)
+                DriverStatusHelper.goOffline(this)
+
+                val goOnlineLayout = findViewById<RelativeLayout>(R.id.btnGoOnline)
+                val sliderCircle = findViewById<FrameLayout>(R.id.sliderContainer)
+                val txtOnlineStatus = findViewById<TextView>(R.id.txtOnlineStatus)
+                moveSliderOffline(sliderCircle, goOnlineLayout, txtOnlineStatus)
+
+                showPopup(
+                    "⚠️ Account Blocked | खाता अवरुद्ध हो गया",
+                    "Your balance has exceeded -₹500. You cannot accept new orders until you clear the due amount. Please pay immediately.\n\nआपका बकाया -₹500 से अधिक हो गया है। बकाया राशि का भुगतान करने तक आप नई orders नहीं ले पाएंगे। कृपया तुरंत भुगतान करें।\n\n📧 support@zarkit.com"
+                )
+            } else {
+                // -1 to -499 → Warning
+                blockGoOnline = false
+                showPopup(
+                    "⚠️ Payment Due | भुगतान बाकी है",
+                    "Your current balance is ₹${formatAmount(earning)}. Please clear your dues soon. If balance goes below -₹500, you will be blocked from accepting new orders.\n\nआपका वर्तमान बकाया ₹${formatAmount(earning)} है। कृपया जल्द भुगतान करें। यदि बकाया -₹500 से अधिक हुआ तो आप नई orders नहीं ले पाएंगे।\n\n📧 support@zarkit.com"
+                )
+            }
+
         } else {
             btnPayNow.visibility = View.GONE
+            blockGoOnline = false
         }
-
-        // Block only if -500 or below
-        blockGoOnline = earning <= -500
     }
-
-    // ================= VEHICLE INFO =================
+// ================= VEHICLE INFO =================
     private fun fetchDriverVehicleInfo() {
         val token = LocalStorage.getToken(this)
         val driverId = LocalStorage.getUserId(this)
@@ -365,11 +472,9 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
                     response: retrofit2.Response<DriverVehicleInfoResponse>
                 ) {
                     val data = response.body() ?: return
-                    val vehicleType =
-                        data.vehicleType.replace("_", " ").uppercase()
-
-                    txtVehicleInfo.text =
-                        "$vehicleType (${data.vehicleSubType}) • ${data.vehicleNumber}"
+                    val combined = "${data.vehicleType}_${data.vehicleSubType}".uppercase()
+                    val displayName = getVehicleDisplayName(combined, data.vehicleType, data.vehicleSubType)
+                    txtVehicleInfo.text = displayName
                 }
 
                 override fun onFailure(call: retrofit2.Call<DriverVehicleInfoResponse>, t: Throwable) {
@@ -378,6 +483,19 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
             })
     }
 
+    private fun getVehicleDisplayName(combined: String, type: String, subType: String): String {
+        return when (combined) {
+            "TWO_WHEELER_EV"       -> "2 Wheeler EV"
+            "TWO_WHEELER_PETROL"   -> "2 Wheeler Petrol"
+            "THREE_WHEELER_EV"     -> "Auto (3W)"
+            "THREE_WHEELER_PETROL" -> "Open Loader EV (3W)"
+            "THREE_WHEELER_CNG"    -> "Open Loader (3W)"
+            "FOUR_WHEELER_EV"      -> "8ft Pickup"
+            "FOUR_WHEELER_PETROL"  -> "10ft Pickup"
+            "FOUR_WHEELER_CNG"     -> "10ft Pickup EV"
+            else -> "$type $subType".replace("_", " ")
+        }
+    }
     // ================= PAYMENT VERIFY =================
     private fun verifyPaymentWithBackend(
         paymentId: String,
@@ -403,15 +521,18 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
                         blockGoOnline = false
                         btnPayNow.visibility = View.GONE
                         fetchDriverEarning()
+                        analytics.logEvent("payment_success", null)
                     } else {
                         Log.e("PAY_VERIFY", "Verify failed: ${response.code()}")
                         showPopup("Payment Error", "Verification failed. Contact support.")
+                        analytics.logEvent("payment_failed", null)
                     }
                 }
 
                 override fun onFailure(call: retrofit2.Call<Void>, t: Throwable) {
                     Log.e("PAY_VERIFY", "Backend error", t)
                     showPopup("Network Error", "Unable to verify payment")
+                    analytics.logEvent("payment_failed", null)
                 }
             })
     }
@@ -429,9 +550,9 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
         val orderId = paymentData.orderId ?: ""
         val signature = paymentData.signature ?: ""
 
-        Log.d("RAZORPAY_DEBUG", "PaymentId: $razorpayPaymentId")
-        Log.d("RAZORPAY_DEBUG", "OrderId: $orderId")
-        Log.d("RAZORPAY_DEBUG", "Signature: $signature")
+//        Log.d("RAZORPAY_DEBUG", "PaymentId: $razorpayPaymentId")
+//        Log.d("RAZORPAY_DEBUG", "OrderId: $orderId")
+//        Log.d("RAZORPAY_DEBUG", "Signature: $signature")
 
         verifyPaymentWithBackend(
             razorpayPaymentId,
@@ -458,11 +579,21 @@ class DashboardActivity : AppCompatActivity(),PaymentResultWithDataListener {
     private fun formatAmount(value: Double): String =
         String.format(Locale.US, "%.2f", value)
 
+
     private fun logout() {
-        LocalStorage.clearActiveRideId(this)
-        LocalStorage.saveDriverOnlineStatus(this, false)
-        LocalStorage.saveToken(this, "")
-        LocalStorage.saveUserId(this, 0)
+
+        val token = LocalStorage.getToken(this)
+        val driverId = LocalStorage.getUserId(this)
+
+        //  OFFLINE API CALL FIRST (agar valid session hai)
+        if (!token.isNullOrEmpty() && driverId != 0L) {
+            DriverStatusHelper.goOffline(this)
+        }
+
+        //  CLEAR EVERYTHING (FCM token, ride id, user id, everything)
+        LocalStorage.clearAll(this)
+
+        //  REDIRECT TO LOGIN
         startActivity(
             Intent(this, LoginActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

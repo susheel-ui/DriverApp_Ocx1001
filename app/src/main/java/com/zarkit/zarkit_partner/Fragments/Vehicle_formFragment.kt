@@ -1,6 +1,8 @@
 package com.zarkit.zarkit_partner.Fragments
 
 import android.Manifest
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -8,9 +10,13 @@ import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.zarkit.zarkit_partner.LocalStorage
 import com.zarkit.zarkit_partner.R
 import com.zarkit.zarkit_partner.api.ApiClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -18,6 +24,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class Vehicle_formFragment : Fragment() {
@@ -50,7 +57,15 @@ class Vehicle_formFragment : Fragment() {
 
     private val cameraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+
             if (success && isAdded) {
+
+                view?.findViewById<ImageView>(R.id.tickRC)?.visibility =
+                    View.VISIBLE
+
+                view?.findViewById<TextView>(R.id.uploadRC)?.visibility =
+                    View.GONE
+
                 toast("RC captured ✅")
             }
         }
@@ -128,7 +143,7 @@ class Vehicle_formFragment : Fragment() {
                 title = "Fuel Type",
                 subOptions = listOf(
                     "EV",
-                    "Petrol/Diesel"
+                    "Petrol"
                 )
             )
         }
@@ -145,9 +160,9 @@ class Vehicle_formFragment : Fragment() {
                 type = "THREE_WHEELER",
                 title = "Vehicle Type",
                 subOptions = listOf(
-                    "Auto EV",
-                    "CNG",
-                    "Petrol/Diesel"
+                    "Auto (3W)",
+                    "Open Loader EV",
+                    "Open Loader"
                 )
             )
         }
@@ -155,7 +170,6 @@ class Vehicle_formFragment : Fragment() {
         // ================= TRUCK =================
 
         cardTruck.setOnClickListener {
-
             resetVehicleSelection()
 
             cardTruck.isSelected = true
@@ -164,9 +178,9 @@ class Vehicle_formFragment : Fragment() {
                 type = "FOUR_WHEELER",
                 title = "Vehicle Size",
                 subOptions = listOf(
-                    "8ft",
-                    "10ft",
-                    "12ft"
+                    "8ft Pickup",
+                    "10ft Pickup",
+                    "10ft Pickup EV"
                 )
             )
         }
@@ -243,20 +257,16 @@ class Vehicle_formFragment : Fragment() {
     // ================= FRONTEND TO BACKEND VALUE =================
 
     private fun getBackendSubType(frontendText: String): String {
-
         return when (frontendText) {
-
-            "Auto EV" -> "EV"
-
-            "Petrol/Diesel" -> "PETROL"
-
-            "8ft" -> "EV"
-
-            "10ft" -> "PETROL"
-
-            "12ft" -> "CNG"
-
-            else -> frontendText.uppercase()
+            "EV"               -> "EV"
+            "Petrol"           -> "PETROL"
+            "Auto (3W)"          -> "EV"
+            "Open Loader EV" -> "PETROL"
+            "Open Loader"  -> "CNG"
+            "8ft Pickup"       -> "EV"
+            "10ft Pickup"      -> "PETROL"
+            "10ft Pickup EV"   -> "CNG"
+            else               -> frontendText.uppercase()
         }
     }
 
@@ -303,55 +313,72 @@ class Vehicle_formFragment : Fragment() {
                 showLoader()
                 isSubmitting = true
 
-                val rcPart = createImagePart("vehicleImage", rcUri!!)
+                // Background thread pe compress karo
+                lifecycleScope.launch(Dispatchers.IO) {
 
-                ApiClient.api.registerVehicle(
-                    authHeader = "Bearer $jwt",
-                    vehicleNumber = vehicleNumber,
-                    city = selectedCity!!,
-                    vehicleType = selectedVehicleType!!,
-
-                    // BACKEND OLD VALUE
-                    vehicleSubType = getBackendSubType(selectedSubType!!),
-
-                    vehicleImage = rcPart
-
-                ).enqueue(object : Callback<ResponseBody> {
-
-                    override fun onResponse(
-                        call: Call<ResponseBody>,
-                        response: Response<ResponseBody>
-                    ) {
-
-                        hideLoader()
-                        isSubmitting = false
-
-                        if (!isAdded) return
-
-                        if (response.isSuccessful) {
-
-                            toast("Vehicle Registered ✅")
-                            onSuccess()
-
-                        } else {
-
-                            toast("Server error : ${response.code()}")
+                    val rcPart = try {
+                        createImagePart("vehicleImage", rcUri!!)
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            hideLoader()
+                            isSubmitting = false
+                            toast("Image processing failed")
                         }
+                        return@launch
                     }
 
-                    override fun onFailure(
-                        call: Call<ResponseBody>,
-                        t: Throwable
-                    ) {
+                    withContext(Dispatchers.Main) {
+                        if (!isAdded) return@withContext
 
-                        hideLoader()
-                        isSubmitting = false
+                        ApiClient.api.registerVehicle(
+                            authHeader = "Bearer $jwt",
+                            vehicleNumber = vehicleNumber,
+                            city = selectedCity!!,
+                            vehicleType = selectedVehicleType!!,
 
-                        if (!isAdded) return
+                            // BACKEND OLD VALUE
+                            vehicleSubType = getBackendSubType(selectedSubType!!),
 
-                        toast("Network error")
+                            vehicleImage = rcPart
+
+                        ).enqueue(object : Callback<ResponseBody> {
+
+                            override fun onResponse(
+                                call: Call<ResponseBody>,
+                                response: Response<ResponseBody>
+                            ) {
+
+                                hideLoader()
+                                isSubmitting = false
+
+                                if (!isAdded) return
+
+                                if (response.isSuccessful) {
+
+                                    toast("Vehicle Registered ✅")
+                                    onSuccess()
+
+                                } else {
+
+                                    toast("Server error : ${response.code()}")
+                                }
+                            }
+
+                            override fun onFailure(
+                                call: Call<ResponseBody>,
+                                t: Throwable
+                            ) {
+
+                                hideLoader()
+                                isSubmitting = false
+
+                                if (!isAdded) return
+
+                                toast("Network error")
+                            }
+                        })
                     }
-                })
+                }
             }
         }
     }
@@ -400,7 +427,7 @@ class Vehicle_formFragment : Fragment() {
 
         val file = File(
             requireContext().cacheDir,
-            "vehicle_rc.jpg"
+            "vehicle_rc_${System.currentTimeMillis()}.jpg"
         )
 
         rcUri = FileProvider.getUriForFile(
@@ -417,11 +444,22 @@ class Vehicle_formFragment : Fragment() {
         uri: Uri
     ): MultipartBody.Part {
 
-        val body = requireContext()
-            .contentResolver
-            .openInputStream(uri)!!
-            .readBytes()
-            .toRequestBody("image/jpeg".toMediaType())
+        val inputStream = requireContext().contentResolver.openInputStream(uri)!!
+        val original = BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+
+        val maxWidth = 800
+        val ratio = maxWidth.toFloat() / original.width
+        val newHeight = (original.height * ratio).toInt()
+
+        val resized = Bitmap.createScaledBitmap(original, maxWidth, newHeight, true)
+        original.recycle()
+
+        val baos = ByteArrayOutputStream()
+        resized.compress(Bitmap.CompressFormat.JPEG, 75, baos)
+        resized.recycle()
+
+        val body = baos.toByteArray().toRequestBody("image/jpeg".toMediaType())
 
         return MultipartBody.Part.createFormData(
             key,
@@ -447,6 +485,7 @@ class Vehicle_formFragment : Fragment() {
     private fun showLoader() {
         loadingLayout.visibility = View.VISIBLE
     }
+
 
     private fun hideLoader() {
         loadingLayout.visibility = View.GONE
