@@ -340,12 +340,29 @@ class LiveRideActivity : BaseActivity(), OnMapReadyCallback {
                         callSection.visibility   = View.GONE
                         txtCallUserTimer.visibility = View.GONE
                     }
+                    // 🔥 Testing Popup - ride load hone ke baad
+                    if (LocalStorage.isTesting(this@LiveRideActivity)) {
+                        AlertDialog.Builder(this@LiveRideActivity)
+                            .setTitle("⚠️ Testing Mode")
+                            .setMessage(
+                                "This account is strictly for Google Play Console review team testing purposes.\n\n" +
+                                        "• 7777777777 is a test number, not a real user account\n" +
+                                        "• Calling feature will not work in this test account\n" +
+                                        "• To test a real ride, install the Zarkit User App and request a ride from a valid Indian number\n\n" +
+                                        "To end the trip, use OTP: 1111"
+                            )
+                            .setCancelable(false)
+                            .setPositiveButton("Got it") { dialog, _ -> dialog.dismiss() }
+                            .show()
+                    }
                 }
                 override fun onFailure(call: Call<RideDetailsResponse>, t: Throwable) {
                     toast("Network error")
                 }
             })
     }
+
+
 
     private fun startTrip() {
         ApiClient.api.startTrip(authHeader, rideId)

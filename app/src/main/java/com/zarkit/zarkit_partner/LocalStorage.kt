@@ -21,6 +21,24 @@ object LocalStorage {
 
     private const val KEY_DRIVER_ONLINE_STATUS = "driver_online_status"
 
+    // upar constants mein add karo
+    private const val KEY_IS_TESTING = "is_testing"
+
+    // -------------------------
+// 🔥 TESTING MODE
+// -------------------------
+    fun saveIsTesting(context: Context, phone: String) {
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean(KEY_IS_TESTING, phone == "7777777777")
+            .apply()
+    }
+
+    fun isTesting(context: Context): Boolean {
+        return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+            .getBoolean(KEY_IS_TESTING, false)
+    }
+
     // -------------------------
     // 🔥 DRIVER ONLINE STATUS
     // -------------------------

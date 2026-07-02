@@ -110,12 +110,14 @@ class Otp_VerificationActivity : BaseActivity() {
                     LocalStorage.saveRole(this@Otp_VerificationActivity, role)
                     LocalStorage.saveUserId(this@Otp_VerificationActivity, userId)
                     LocalStorage.saveIsRegistered(this@Otp_VerificationActivity, isRegistered)
+                    LocalStorage.saveIsTesting(this@Otp_VerificationActivity, phone)
 
                     Toast.makeText(
                         this@Otp_VerificationActivity,
                         "OTP Verified",
                         Toast.LENGTH_SHORT
                     ).show()
+
 
                     if (!isRegistered) {
                         startActivity(

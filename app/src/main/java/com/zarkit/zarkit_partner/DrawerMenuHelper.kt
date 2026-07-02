@@ -4,6 +4,11 @@ import android.content.Intent
 import android.util.Log
 import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.zarkit.zarkit_partner.api.ApiClient
+import com.zarkit.zarkit_partner.api.ActiveRideResponse
 
 object DrawerMenuHelper {
 
@@ -27,35 +32,19 @@ object DrawerMenuHelper {
             )
         }
 
-        // ================= CURRENT TRIP (FIXED 🔥) =================
+        // ================= CURRENT TRIP =================
         menuCurrentTrip.setOnClickListener {
 
             drawerLayout.closeDrawers()
 
-            // 🔥 READ FROM YOUR EXISTING LocalStorage
             val activeRideId = LocalStorage.getActiveRideId(activity)
 
-            Log.d(
-                "DRAWER_CURRENT_TRIP",
-                "Clicked | activeRideId = $activeRideId"
-            )
+            Log.d("DRAWER_CURRENT_TRIP", "Clicked | activeRideId = $activeRideId")
 
-            // ✅ ACTIVE ONLY IF > 0
             if (activeRideId > 0L) {
-
-                val intent = Intent(activity, LiveRideActivity::class.java).apply {
-                    putExtra("rideId", activeRideId) // 🔥 CRITICAL
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                }
-
-                activity.startActivity(intent)
-
+                openLiveRide(activity, activeRideId)
             } else {
-
-                activity.showPopup(
-                    "No Active Ride",
-                    "You do not have any active ride at the moment."
-                )
+                fetchActiveRideFromApi(activity)
             }
         }
 
@@ -82,5 +71,49 @@ object DrawerMenuHelper {
             drawerLayout.closeDrawers()
             onLogout()
         }
+    }
+
+    // ================= HELPERS =================
+
+    private fun openLiveRide(activity: DashboardActivity, rideId: Long) {
+        val intent = Intent(activity, LiveRideActivity::class.java).apply {
+            putExtra("rideId", rideId)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        activity.startActivity(intent)
+    }
+
+    private fun fetchActiveRideFromApi(activity: DashboardActivity) {
+
+        val token = LocalStorage.getToken(activity) ?: run {
+            activity.showPopup("No Active Ride", "You do not have any active ride at the moment.")
+            return
+        }
+
+        val driverId = LocalStorage.getUserId(activity)
+
+        ApiClient.api.getLatestActiveRide(
+            "Bearer $token",
+            driverId
+        ).enqueue(object : Callback<ActiveRideResponse> {
+
+            override fun onResponse(
+                call: Call<ActiveRideResponse>,
+                response: Response<ActiveRideResponse>
+            ) {
+                val rideId = response.body()?.rideId ?: 0L
+
+                if (rideId > 0L) {
+                    LocalStorage.saveActiveRideId(activity, rideId)
+                    openLiveRide(activity, rideId)
+                } else {
+                    activity.showPopup("No Active Ride", "You do not have any active ride at the moment.")
+                }
+            }
+
+            override fun onFailure(call: Call<ActiveRideResponse>, t: Throwable) {
+                activity.showPopup("No Active Ride", "You do not have any active ride at the moment.")
+            }
+        })
     }
 }

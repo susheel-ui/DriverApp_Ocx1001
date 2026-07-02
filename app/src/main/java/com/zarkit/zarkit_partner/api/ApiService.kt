@@ -1,5 +1,6 @@
 package com.zarkit.zarkit_partner.api
 
+import com.zarkit.zarkit_partner.api.ActiveRideResponse
 import com.zarkit.zarkit_partner.api.Entites.EndRideRequest
 import com.zarkit.zarkit_partner.api.Entites.body
 import okhttp3.MultipartBody
@@ -149,6 +150,12 @@ interface ApiService {
         @Path("driverId") driverId: Int,
         @Header("Authorization") token: String
     ): Call<List<Trip>>
+
+    @GET("driver/latest-active-ride")
+    fun getLatestActiveRide(
+        @Header("Authorization") token: String,
+        @Query("driverId") driverId: Long
+    ): retrofit2.Call<ActiveRideResponse>
 
     @POST("driver/online/{driverId}")
     fun driverOnline(
